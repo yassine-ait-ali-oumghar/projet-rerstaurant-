@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dar tiyaba - Reservation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Playfair Display', 'serif'],
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              primary: '#8b6914',
+              secondary: '#c9a961',
+              accent: '#d4af37',
+              gold: '#f4d03f',
+              bronze: '#6b4e0f',
+              ink: '#3d2f0a',
+              muted: '#6b5d3a',
+              paper: '#faf8f3',
+              cream: '#f5f1e8',
+              beige: '#ede8dd',
+              line: '#d4c4a8',
+            },
+          },
+          boxShadow: {
+            soft: '0 10px 40px rgba(139, 105, 20, 0.15)',
+            lift: '0 20px 60px rgba(139, 105, 20, 0.2)',
+          },
+          keyframes: {
+            shine: { '0%': { transform: 'translateX(-60%) rotate(12deg)' }, '100%': { transform: 'translateX(60%) rotate(12deg)' } },
+          },
+          animation: { shine: 'shine 1.1s ease both' },
+        },
+      },
+    };
+  </script>
+  <style>
+    .auth-hidden{display:none}
+    body{transition:background 520ms ease, background-color 520ms ease}
+
+    body.theme-basic{background: linear-gradient(180deg, #faf8f3, #f5f1e8)}
+    body.theme-silver{background: linear-gradient(180deg, #f3f4f6, #e5e7eb)}
+    body.theme-gold{background: linear-gradient(180deg, #fff7cc, rgba(255,214,74,0.55))}
+
+    .theme-panel{transition: background-color 520ms ease, border-color 520ms ease, box-shadow 520ms ease}
+    body.theme-basic .theme-panel{background-color:#ffffff;border-color:rgba(212,196,168,0.80)}
+    body.theme-silver .theme-panel{background-color:rgba(255,255,255,0.78);border-color:rgba(148,163,184,0.65);box-shadow:0 18px 70px rgba(2,6,23,0.10)}
+    body.theme-gold .theme-panel{background-color:rgba(255,255,255,0.86);border-color:rgba(255,214,74,0.78);box-shadow:0 22px 80px rgba(61,47,10,0.18)}
+
+    .theme-cta{transition: background-color 420ms ease, box-shadow 420ms ease, transform 260ms ease}
+    body.theme-silver .theme-cta{background-color:#374151}
+    body.theme-silver .theme-cta:hover{background-color:#4b5563}
+    body.theme-gold .theme-cta{background-color:#b7791f}
+    body.theme-gold .theme-cta:hover{background-color:#ffd64a}
+
+    .tier{
+      position:relative;overflow:hidden;transform-style:preserve-3d;perspective:900px;
+      transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
+    }
+    .tier::after{
+      content:'';position:absolute;inset:-40% -60%;
+      background:linear-gradient(115deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.75) 35%,rgba(255,255,255,0) 60%);
+      transform:translateX(-60%) rotate(12deg);opacity:0;pointer-events:none;
+    }
+    .tier:hover{transform:translateY(-3px) rotateX(6deg)}
+    .tier:hover::after{opacity:1;animation:shine 1100ms ease both}
+    .tier.is-on{border-color:rgba(212,175,55,.92)!important;box-shadow:0 20px 70px rgba(61,47,10,.22)!important;transform:translateY(-2px) rotateX(8deg)}
+    .tier.is-on::after{opacity:1;animation:shine 1200ms ease both}
+
+    #toast{position:fixed;inset:0;z-index:9999;display:none;place-items:center;padding:24px}
+    #toast.is-on{display:grid}
+
+    .status-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:9999px;border:1px solid transparent;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;transition:background-color 320ms ease,border-color 320ms ease,color 320ms ease,transform 320ms ease}
+    .status-non{background:rgba(254,226,226,0.85);border-color:rgba(248,113,113,0.55);color:rgba(153,27,27,0.92)}
+    .status-ok{background:rgba(220,252,231,0.85);border-color:rgba(34,197,94,0.45);color:rgba(21,128,61,0.92)}
+    .status-pulse{transform:translateY(-1px)}
+  </style>
+</head>
+<body class="theme-basic min-h-screen font-sans text-brand-ink">
+  <nav class="sticky top-0 z-50 border-b border-brand-line/70 bg-brand-paper/80 backdrop-blur-xl">
+    <div class="mx-auto flex w-full max-w-7xl items-center justify-between px-5 py-5 md:px-10">
+      <a href="html.html" class="inline-flex items-center gap-2 font-display text-xl font-bold tracking-tight text-brand-bronze">
+        <span class="relative">dar tiyaba</span><span class="text-sm text-brand-accent">★</span>
+      </a>
+      <div class="flex items-center gap-3">
+        <a href="html.html" class="border border-brand-line/80 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">Back</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="mx-auto w-full max-w-7xl px-5 py-10 md:px-10">
+    <div class="flex flex-col gap-3">
+      <div class="text-xs font-semibold uppercase tracking-[0.32em] text-brand-primary">Reservation</div>
+      <h1 class="font-display text-4xl font-bold tracking-tight text-brand-ink">Luxury Booking</h1>
+      <p class="max-w-2xl text-sm leading-relaxed text-brand-muted">Choose a class, then pick an available date + time. Double booking is blocked.</p>
+    </div>
+
+    <section id="adminPanel" class="theme-panel auth-hidden mt-10 border border-brand-line/80 bg-white p-7 shadow-soft">
+      <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Admin dashboard</div>
+          <h2 class="mt-2 font-display text-2xl font-bold text-brand-ink">Reservations</h2>
+        </div>
+        <div class="grid gap-3 md:grid-cols-3">
+          <div>
+            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Date</label>
+            <input id="fDate" type="date" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm outline-none focus:border-brand-accent" />
+          </div>
+          <div>
+            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Time</label>
+            <select id="fTime" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm outline-none focus:border-brand-accent"></select>
+          </div>
+          <div>
+            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Class</label>
+            <select id="fTier" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm outline-none focus:border-brand-accent">
+              <option value="">All</option><option value="basic">Basic</option><option value="silver">Silver</option><option value="gold">Gold</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="mt-6 flex items-center justify-between text-sm"><div class="font-semibold">Count</div><div id="adminCount" class="text-brand-muted">0</div></div>
+      <div id="adminList" class="mt-4 grid gap-3"></div>
+    </section>
+
+    <section class="mt-10 grid gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+      <div class="theme-panel border border-brand-line/80 bg-white p-7 shadow-soft">
+        <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Table class</div>
+        <h2 class="mt-2 font-display text-2xl font-bold text-brand-ink">Basic · Silver · Gold</h2>
+
+        <input id="tier" type="hidden" value="basic" />
+
+        <div class="mt-6 grid gap-3 lg:grid-cols-3">
+          <button type="button" class="tier is-on border border-brand-line/80 bg-white p-5 text-left shadow-soft" data-tier="basic">
+            <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Basic</div>
+            <div class="mt-2 font-display text-xl font-bold">Classic</div>
+            <div class="mt-2 text-sm text-brand-muted">Soft gray · minimal</div>
+          </button>
+          <button type="button" class="tier border border-brand-line/80 bg-white p-5 text-left shadow-soft" data-tier="silver">
+            <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Silver</div>
+            <div class="mt-2 font-display text-xl font-bold">Lumière</div>
+            <div class="mt-2 text-sm text-brand-muted">Reflection · glass feel</div>
+          </button>
+          <button type="button" class="tier border border-brand-line/80 bg-white p-5 text-left shadow-soft" data-tier="gold">
+            <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Gold</div>
+            <div class="mt-2 font-display text-xl font-bold">Prestige</div>
+            <div class="mt-2 text-sm text-brand-muted">Luxury shine · premium</div>
+          </button>
+        </div>
+
+        <div class="mt-8 grid gap-5">
+          <div>
+            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Date</label>
+            <input id="date" type="date" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm outline-none focus:border-brand-accent" required />
+          </div>
+          <div>
+            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Time (available)</label>
+            <select id="time" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm outline-none focus:border-brand-accent" required></select>
+          </div>
+          <div class="grid gap-5 md:grid-cols-2">
+            <div>
+              <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Table</label>
+              <select id="table" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm outline-none focus:border-brand-accent" required></select>
+            </div>
+            <div class="border border-brand-line/80 bg-brand-paper px-5 py-4">
+              <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Availability</div>
+              <div id="availability" class="mt-2 text-sm font-semibold text-brand-bronze">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="theme-panel border border-brand-line/80 bg-white p-7 shadow-soft">
+        <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Client</div>
+        <h2 class="mt-2 font-display text-2xl font-bold text-brand-ink">Your details</h2>
+
+        <form id="form" class="mt-8 space-y-5">
+          <div>
+            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Full name</label>
+            <input id="name" type="text" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm outline-none focus:border-brand-accent" required />
+          </div>
+          <div>
+            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Number of people</label>
+            <input id="people" type="number" min="1" max="12" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm outline-none focus:border-brand-accent" required />
+          </div>
+          <div>
+            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Phone (+212XXXXXXXXX)</label>
+            <input id="phone" type="tel" inputmode="tel" placeholder="+212612345678" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm outline-none focus:border-brand-accent" required />
+            <div class="mt-2 text-xs text-brand-muted">Must start with +212 and contain exactly 9 digits after.</div>
+          </div>
+          <div id="err" class="auth-hidden border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"></div>
+          <button type="submit" class="theme-cta group relative w-full overflow-hidden bg-brand-bronze px-7 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-white shadow-soft transition-all duration-500 hover:-translate-y-0.5 hover:bg-brand-accent hover:shadow-lift">Confirm reservation</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" aria-hidden="true">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div class="relative w-[min(560px,92vw)] border border-brand-line/80 bg-white p-7 shadow-lift">
+      <div class="text-xs font-semibold uppercase tracking-[0.32em] text-brand-primary">Reservation</div>
+      <h3 id="toastTitle" class="mt-2 font-display text-2xl font-bold text-brand-ink">Confirmed</h3>
+      <p id="toastText" class="mt-2 text-sm text-brand-muted">—</p>
+      <div class="mt-6 flex justify-end">
+        <button id="toastClose" type="button" class="border border-brand-line/80 bg-brand-paper px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink hover:border-brand-accent">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const SESSION_KEY='dt_session';
+      const ADMIN_SESSION_KEY='dt_admin_session';
+      const RES_KEY='dt_reservations';
+      const slots=['19:00','19:30','20:00','20:30','21:00','21:30','22:00'];
+      const tables={basic:['B1','B2','B3','B4','B5','B6'],silver:['S1','S2','S3','S4'],gold:['G1','G2']};
+
+      function safe(v){try{return JSON.parse(v)}catch{return null}}
+      function loadSession(){const s=safe(localStorage.getItem(SESSION_KEY));return s&&s.email?s:null}
+      function isAdmin(){const s=safe(localStorage.getItem(SESSION_KEY));if(s&&s.role&&s.role!=='admin')return false; if(s&&s.role==='admin')return true; return localStorage.getItem(ADMIN_SESSION_KEY)==='true'}
+      function loadRes(){const r=safe(localStorage.getItem(RES_KEY));return Array.isArray(r)?r:[]}
+      function saveRes(list){localStorage.setItem(RES_KEY,JSON.stringify(Array.isArray(list)?list:[]))}
+      function k(t,d,tm){return `${t}__${d}__${tm}`}
+      function today(){const d=new Date();const y=d.getFullYear();const m=String(d.getMonth()+1).padStart(2,'0');const da=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${da}`}
+
+      const tier=document.getElementById('tier');
+      const tierBtns=[...document.querySelectorAll('[data-tier]')];
+      const date=document.getElementById('date');
+      const time=document.getElementById('time');
+      const table=document.getElementById('table');
+      const availability=document.getElementById('availability');
+      const form=document.getElementById('form');
+      const name=document.getElementById('name');
+      const people=document.getElementById('people');
+      const phone=document.getElementById('phone');
+      const err=document.getElementById('err');
+
+      const adminPanel=document.getElementById('adminPanel');
+      const adminList=document.getElementById('adminList');
+      const adminCount=document.getElementById('adminCount');
+      const fDate=document.getElementById('fDate');
+      const fTime=document.getElementById('fTime');
+      const fTier=document.getElementById('fTier');
+
+      const toast=document.getElementById('toast');
+      const toastTitle=document.getElementById('toastTitle');
+      const toastText=document.getElementById('toastText');
+      const toastClose=document.getElementById('toastClose');
+
+      function showErr(m){if(!err)return; if(!m){err.classList.add('auth-hidden');err.textContent='';return;} err.textContent=m;err.classList.remove('auth-hidden');}
+      function normalizePhone(raw){return String(raw||'').trim().replace(/\s+/g,'')}
+      function isValidPhone(v){return /^\+212\d{9}$/.test(String(v||''))}
+      function waPhoneDigits(v){return String(v||'').replace(/^\+/,'')}
+      function getTier(){return tier?String(tier.value||'basic'):'basic'}
+      function getDate(){return date?String(date.value||''):''}
+
+      function computeUsed(){
+        const d=getDate();
+        const tr=getTier();
+        const list=loadRes();
+        const allowed=tables[tr]||[];
+        const used=new Set(list.filter(r=>r&&r.date===d&&allowed.includes(r.tableName)).map(r=>k(r.tableName,r.date,r.time)));
+        return used;
+      }
+
+      function renderTables(){
+        if(!table) return;
+        const list=tables[getTier()]||[];
+        table.innerHTML=list.map(t=>`<option value="${t}">${t}</option>`).join('');
+      }
+
+      function renderTimes(){
+        if(!time) return;
+        const d=getDate();
+        if(!d){time.innerHTML='<option value="">Pick a date</option>';return;}
+        const used=computeUsed();
+        const t=table?String(table.value||''):'';
+        const av=slots.filter(s=>!used.has(k(t,d,s)));
+        time.innerHTML=av.length?av.map(s=>`<option value="${s}">${s}</option>`).join(''):'<option value="">No slots</option>';
+      }
+
+      function renderAvail(){
+        if(!availability) return;
+        const d=getDate();
+        if(!d){availability.textContent='Pick a date';return;}
+        const used=computeUsed();
+        const t=table?String(table.value||''):'';
+        const tm=time?String(time.value||''):'';
+        if(!tm){
+          const count=slots.filter(s=>!used.has(k(t,d,s))).length;
+          availability.textContent=`${count} slots for ${t}`;
+          return;
+        }
+        availability.textContent=used.has(k(t,d,tm))?'Unavailable':'Available';
+      }
+
+      function setTier(v){
+        const t=String(v||'basic');
+        if(tier) tier.value=t;
+        document.body.classList.remove('theme-basic','theme-silver','theme-gold');
+        document.body.classList.add(t==='silver'?'theme-silver':t==='gold'?'theme-gold':'theme-basic');
+        tierBtns.forEach(b=>b.classList.toggle('is-on',String(b.getAttribute('data-tier')||'')===t));
+        renderTables();
+        renderTimes();
+        renderAvail();
+      }
+
+      function renderAdmin(){
+        if(!adminList||!adminCount) return;
+        const list=loadRes();
+        const fd=fDate?String(fDate.value||''):'';
+        const ft=fTime?String(fTime.value||''):'';
+        const fc=fTier?String(fTier.value||''):'';
+        const filtered=list.filter(r=>{
+          if(!r) return false;
+          if(fd&&r.date!==fd) return false;
+          if(ft&&r.time!==ft) return false;
+          if(fc&&r.tableClass!==fc) return false;
+          return true;
+        });
+        adminCount.textContent=String(filtered.length);
+        adminList.innerHTML=filtered.map(r=>{
+          const status=String(r.status||'NON_CONFIRMED');
+          const badgeClass=status==='CONFIRMED'?'status-ok':'status-non';
+          const phoneText=String(r.phone||'');
+          const email=String(r.byEmail||'guest');
+          return `
+<div class="border border-brand-line/80 bg-brand-paper px-5 py-4">
+  <div class="grid gap-3 md:grid-cols-12 md:items-center">
+    <div class="md:col-span-3">
+      <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Client</div>
+      <div class="mt-1 text-sm font-semibold text-brand-ink">${String(r.name||'')}</div>
+      <div class="mt-1 text-xs text-brand-muted">${email}</div>
+      <div class="mt-1 text-xs text-brand-muted">${phoneText}</div>
+    </div>
+    <div class="md:col-span-2">
+      <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Status</div>
+      <div class="mt-2"><span class="status-badge ${badgeClass}" data-status-badge data-id="${String(r.id||'')}">${status}</span></div>
+    </div>
+    <div class="md:col-span-1">
+      <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">People</div>
+      <div class="mt-1 text-sm font-semibold text-brand-ink">${String(r.people||'')}</div>
+    </div>
+    <div class="md:col-span-2">
+      <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Date</div>
+      <div class="mt-1 text-sm font-semibold text-brand-ink">${String(r.date||'')}</div>
+    </div>
+    <div class="md:col-span-1">
+      <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Time</div>
+      <div class="mt-1 text-sm font-semibold text-brand-ink">${String(r.time||'')}</div>
+    </div>
+    <div class="md:col-span-1">
+      <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Table</div>
+      <div class="mt-1 text-sm font-semibold text-brand-ink">${String(r.tableName||'')}</div>
+      <div class="mt-1 text-xs text-brand-muted">${String(r.tableClass||'')}</div>
+    </div>
+    <div class="md:col-span-2 md:flex md:justify-end">
+      <div class="grid gap-2 md:w-full md:max-w-[220px]">
+        <a class="border border-brand-line/80 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" href="https://wa.me/${waPhoneDigits(phoneText)}?text=${encodeURIComponent('Hello, your reservation is confirmed. Thank you!')}" target="_blank" rel="noreferrer" data-action="wa" data-id="${String(r.id||'')}">Confirm (WhatsApp)</a>
+        <button class="border border-brand-line/80 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" type="button" data-action="verify" data-id="${String(r.id||'')}">Verify</button>
+        <button class="border border-red-200 bg-red-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-red-700 transition-all duration-300 hover:-translate-y-0.5 hover:border-red-300" type="button" data-action="delete" data-id="${String(r.id||'')}">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>`;
+        }).join('');
+      }
+
+      // init
+      if(date){date.min=today();date.value=today();}
+      if(fTime){fTime.innerHTML='<option value="">All</option>'+slots.map(s=>`<option value="${s}">${s}</option>`).join('');}
+      renderTables();
+      renderTimes();
+      renderAvail();
+
+      tierBtns.forEach(b=>b.addEventListener('click',e=>{e.preventDefault();setTier(b.getAttribute('data-tier')||'basic')}));
+      if(table) table.addEventListener('change',()=>{renderTimes();renderAvail()});
+      if(time) time.addEventListener('change',renderAvail);
+      if(date) date.addEventListener('change',()=>{renderTimes();renderAvail()});
+
+      if(toastClose&&toast) toastClose.addEventListener('click',e=>{e.preventDefault();toast.classList.remove('is-on')});
+
+      // admin visibility
+      if(isAdmin()){
+        if(adminPanel) adminPanel.classList.remove('auth-hidden');
+        if(fDate) fDate.addEventListener('change',renderAdmin);
+        if(fTime) fTime.addEventListener('change',renderAdmin);
+        if(fTier) fTier.addEventListener('change',renderAdmin);
+        renderAdmin();
+      }
+
+      if(adminList){
+        adminList.addEventListener('click',(e)=>{
+          const btn=e.target && e.target.closest ? e.target.closest('[data-action]') : null;
+          if(!btn) return;
+          if(!isAdmin()) return;
+          const action=String(btn.getAttribute('data-action')||'');
+          const id=String(btn.getAttribute('data-id')||'');
+          if(!id) return;
+
+          if(action==='verify'){
+            const list=loadRes();
+            const idx=list.findIndex(r=>r&&String(r.id||'')===id);
+            if(idx===-1) return;
+            list[idx]={...(list[idx]||{}),status:'CONFIRMED'};
+            saveRes(list);
+            renderAdmin();
+            const badge=adminList.querySelector(`[data-status-badge][data-id="${id}"]`);
+            if(badge){
+              badge.classList.add('status-pulse');
+              window.setTimeout(()=>badge.classList.remove('status-pulse'),260);
+            }
+            return;
+          }
+
+          if(action==='delete'){
+            const ok=window.confirm('Delete this reservation?');
+            if(!ok) return;
+            const list=loadRes().filter(r=>r&&String(r.id||'')!==id);
+            saveRes(list);
+            renderAdmin();
+            renderTimes();
+            renderAvail();
+            return;
+          }
+        });
+      }
+
+      // realtime across tabs
+      window.addEventListener('storage',(e)=>{ if(e.key===RES_KEY) {renderTimes();renderAvail(); if(isAdmin()) renderAdmin();} });
+
+      // booking
+      if(form){
+        form.addEventListener('submit',(e)=>{
+          e.preventDefault();
+          showErr('');
+          const d=getDate();
+          const tm=time?String(time.value||''):'';
+          const tb=table?String(table.value||''):'';
+          const tr=getTier();
+          const nm=name?String(name.value||'').trim():'';
+          const pp=people?Number(people.value||0):0;
+          const ph=normalizePhone(phone?phone.value:'');
+          if(!nm||!pp||!d||!tm||!tb||!ph){showErr('Please fill all fields.');return;}
+          if(!isValidPhone(ph)){showErr('Phone number invalid. Format: +212612910010');return;}
+
+          const list=loadRes();
+          const exists=list.some(r=>r&&r.tableName===tb&&r.date===d&&r.time===tm);
+          if(exists){showErr('Reservation deja faite, choisir une autre date');renderTimes();renderAvail();return;}
+
+          const session=loadSession();
+          const payload={
+            id:`${Date.now()}_${Math.random().toString(16).slice(2)}`,
+            byEmail: session?String(session.email||''):'',
+            name:nm,
+            people:pp,
+            phone: ph,
+            date:d,
+            time:tm,
+            tableName:tb,
+            tableClass:tr,
+            status: 'NON_CONFIRMED',
+            createdAt:Date.now(),
+          };
+          list.unshift(payload);
+          saveRes(list);
+
+          if(toastTitle) toastTitle.textContent=`Reservation · ${tr.toUpperCase()}`;
+          if(toastText) toastText.textContent=`${nm} · ${pp} pers · ${d} ${tm} · ${tb}`;
+          if(toast) toast.classList.add('is-on');
+
+          form.reset();
+          if(people) people.value='';
+          setTier('basic');
+          if(date){date.value=today();}
+          renderTables();
+          renderTimes();
+          renderAvail();
+          if(isAdmin()) renderAdmin();
+        });
+      }
+
+      // disable unavailable times by tier/date/table (handled by select options)
+    })();
+  </script>
+</body>
+</html>
