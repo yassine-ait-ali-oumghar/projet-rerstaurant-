@@ -1071,7 +1071,7 @@
                             <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 bg-[radial-gradient(circle_at_30%_20%,rgba(212,175,55,0.16),transparent_55%)]"></div>
                             <div class="text-2xl">🚚</div>
                             <h3 class="mt-4 font-display text-xl font-bold text-brand-ink">Livraison Rapide</h3>
-                            <p class="mt-2 text-sm leading-relaxed text-brand-muted">Livraison en 30-45 minutes dans un rayon de 10km autour du restaurant</p>
+                            <p class="mt-2 text-sm leading-relaxed text-brand-muted">Livraison en 30-40min dans un rayon de 100km autour du restaurant</p>
                         </div>
                         <div class="group relative overflow-hidden border border-brand-line/80 bg-white/75 p-6 shadow-soft backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:shadow-lift">
                             <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 bg-[radial-gradient(circle_at_30%_20%,rgba(27,79,114,0.12),transparent_55%)]"></div>
@@ -1089,7 +1089,7 @@
                             <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 bg-[radial-gradient(circle_at_30%_20%,rgba(27,79,114,0.10),transparent_55%)]"></div>
                             <div class="text-2xl">📍</div>
                             <h3 class="mt-4 font-display text-xl font-bold text-brand-ink">Zone de Livraison</h3>
-                            <p class="mt-2 text-sm leading-relaxed text-brand-muted">Paris et proche banlieue (75, 92, 93, 94)</p>
+                            <p class="mt-2 text-sm leading-relaxed text-brand-muted">Maroc</p>
                         </div>
                     </div>
                 </div>
@@ -1182,7 +1182,7 @@
             <div class="grid gap-10 lg:grid-cols-4">
                 <div>
                     <div class="inline-flex items-center gap-2 font-display text-xl font-bold tracking-tight">
-                        <span>Le Gourmet</span>
+                        <span>casa cocinera</span>
                         <span class="text-sm text-brand-gold">★</span>
                     </div>
                     <p class="mt-5 text-sm leading-relaxed text-white/75">Une expérience culinaire d'exception depuis 2010. Où chaque plat raconte une histoire et chaque repas devient un souvenir inoubliable.</p>
@@ -1223,7 +1223,7 @@
                 </div>
             </div>
             <div class="mt-12 flex flex-col gap-3 border-t border-white/10 pt-8 text-sm text-white/60 md:flex-row md:items-center md:justify-between">
-                <p>&copy; 2024 Le Gourmet. Tous droits réservés.</p>
+                <p>&copy; 2025 casa cocinera. Tous droits réservés.</p>
                 <p>Conçu avec passion pour l'excellence culinaire</p>
             </div>
         </div>
@@ -1337,7 +1337,7 @@
             <div id="authPanel" class="auth-panel-enter w-full border border-white/10 bg-brand-paper shadow-lift max-h-[calc(100vh-3rem)] overflow-y-auto" data-auth-allow>
                 <div class="flex items-center justify-between border-b border-brand-line/80 px-7 py-6" data-auth-allow>
                     <div data-auth-allow>
-                        <div class="text-xs font-semibold uppercase tracking-[0.32em] text-brand-primary" data-auth-allow>dar tiyaba</div>
+                        <div class="text-xs font-semibold uppercase tracking-[0.32em] text-brand-primary" data-auth-allow>casa cocinera</div>
                         <h3 class="mt-2 font-display text-2xl font-bold tracking-tight text-brand-ink" data-auth-allow>Login / Register</h3>
                     </div>
                     <button id="authCloseBtn" type="button" class="h-10 w-10 border border-brand-line/80 bg-white text-sm font-semibold text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" data-auth-allow>
@@ -1976,6 +1976,10 @@
                 if (deliveryForm && target === deliveryForm) {
                     e.preventDefault();
 
+                    try {
+                        window.__dtDeliveryCartSnapshot = loadCart();
+                    } catch {}
+
                     const trackingPanel = document.getElementById('trackingPanel');
                     if (trackingPanel) {
                         trackingPanel.style.display = 'block';
@@ -2112,7 +2116,7 @@
                             if (etaEl) etaEl.textContent = 'ETA: 0 min';
                             if (distanceEl) distanceEl.textContent = 'Distance: 0.0 km';
                             (function finalizeOrderOnDelivery(){
-                                const cart = loadCart();
+                                const cart = (window.__dtDeliveryCartSnapshot && Array.isArray(window.__dtDeliveryCartSnapshot)) ? window.__dtDeliveryCartSnapshot : loadCart();
                                 if (cart && cart.length) {
                                     const total = cart.reduce((sum, it) => sum + (Number(it.price) || 0) * (Number(it.qty) || 1), 0);
                                     const orders = loadOrders();
@@ -2120,12 +2124,14 @@
                                     const createdAt = new Date().toLocaleString();
                                     orders.push({ id, createdAt, total, items: cart, status: 'delivered' });
                                     saveOrders(orders);
-                                    saveCart([]);
-                                    renderCart();
-                                    renderOrders();
-                                    alert('Commande livrée au client. Merci pour votre commande !');
-                                    setOrdersOpen(true);
+                                    try { window.__dtDeliveryCartSnapshot = []; } catch {}
                                 }
+                                saveCart([]);
+                                renderCart();
+                                renderOrders();
+                                setCartOpen(false);
+                                alert('Commande livrée au client. Merci pour votre commande !');
+                                setOrdersOpen(true);
                             })();
                             window.clearInterval(window.__dtDeliveryInterval);
                             window.__dtDeliveryInterval = null;
@@ -2789,6 +2795,17 @@
 
             function renderOrders() {
                 if (!ordersList || !ordersEmpty) return;
+                const sessionForMerge = loadSession();
+                if (sessionForMerge) {
+                    const guestRaw = localStorage.getItem('dt_orders_guest');
+                    const guestOrders = safeJsonParse(guestRaw);
+                    if (Array.isArray(guestOrders) && guestOrders.length) {
+                        const current = loadOrders();
+                        const merged = current.concat(guestOrders);
+                        saveOrders(merged);
+                        localStorage.removeItem('dt_orders_guest');
+                    }
+                }
                 const orders = loadOrders();
                 if (!orders.length) {
                     ordersList.innerHTML = '';
