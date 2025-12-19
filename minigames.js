@@ -246,7 +246,7 @@ tailwind.config = {
                     c.disabled = !!st.winner || !!st.board[i];
                     c.classList.toggle('opacity-60', !!st.winner);
                 }
-                if (tttTurn) tttTurn.textContent = st.winner ? 'â€”' : st.turn;
+                if (tttTurn) tttTurn.textContent = st.winner ? '—' : st.turn;
 
                 if (tttStatus) {
                     if (st.winner === 'X') tttStatus.textContent = 'X wins';
@@ -265,7 +265,7 @@ tailwind.config = {
                 if (tttMode === 'solo') {
                     tttMatchKey = TTT_SOLO_KEY;
                     if (tttTwoPlayerPanel) tttTwoPlayerPanel.classList.add('auth-hidden');
-                    if (tttMatchId) tttMatchId.textContent = 'â€”';
+                    if (tttMatchId) tttMatchId.textContent = '—';
                     if (tttYouSymbol) tttYouSymbol.textContent = 'X';
                     const st = tttLoad(tttMatchKey);
                     tttRender(st);
@@ -273,8 +273,8 @@ tailwind.config = {
                 }
 
                 if (tttTwoPlayerPanel) tttTwoPlayerPanel.classList.remove('auth-hidden');
-                if (tttYouSymbol) tttYouSymbol.textContent = 'â€”';
-                if (tttMatchId) tttMatchId.textContent = 'â€”';
+                if (tttYouSymbol) tttYouSymbol.textContent = '—';
+                if (tttMatchId) tttMatchId.textContent = '—';
                 tttMatchKey = null;
             }
 
@@ -336,7 +336,7 @@ tailwind.config = {
                 tttMatchKey = key;
                 if (tttMatchId) tttMatchId.textContent = key;
                 const symbol = tttDetermineSymbol(me, state);
-                if (tttYouSymbol) tttYouSymbol.textContent = symbol || 'â€”';
+                if (tttYouSymbol) tttYouSymbol.textContent = symbol || '—';
                 tttRender(state);
 
                 tttPoll = setInterval(() => {
