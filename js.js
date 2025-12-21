@@ -636,6 +636,8 @@
                 const deliveryForm = document.getElementById('deliveryForm');
                 if (deliveryForm && target === deliveryForm) {
                     e.preventDefault();
+                    const orderText = (document.getElementById('deliveryOrder')?.value || '').trim();
+                    if (!validateDeliveryOrderText(orderText)) return;
 
                     const trackingPanel = document.getElementById('trackingPanel');
                     if (trackingPanel) {
@@ -861,7 +863,80 @@
                 return `https://wa.me/${n}?text=${msg}`;
             }
 
-            const restaurantPhoneText = '+91 95865 38447';
+            function normalizeText(s){
+                return String(s||'')
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g,'')
+                    .toLowerCase()
+                    .trim();
+            }
+
+            function getMenuNames(){
+                let names = [];
+                try {
+                    const raw = localStorage.getItem('dt_products');
+                    const products = raw ? JSON.parse(raw) : [];
+                    if (Array.isArray(products)) {
+                        names = products
+                            .map(p => String(p && p.name || '').trim())
+                            .filter(Boolean);
+                    }
+                } catch {}
+                if (!names.length) {
+                    const els = document.querySelectorAll('[data-menu-card] h4');
+                    if (els && els.length) {
+                        names = Array.from(els)
+                            .map(el => String(el.textContent||'').trim())
+                            .filter(Boolean);
+                    }
+                }
+                const set = new Set(names.map(normalizeText));
+                return Array.from(set);
+            }
+
+            function parseOrderItems(text){
+                return String(text||'')
+                    .split(/[\n,;]+/g)
+                    .map(s => s.replace(/\b\d+\s*x\b|\bx\s*\d+\b/gi,''))
+                    .map(s => s.replace(/\([^)]*\)/g,''))
+                    .map(s => s.replace(/\b\d+\b/g,''))
+                    .map(s => s.replace(/[\-\|]+/g,' '))
+                    .map(s => s.trim())
+                    .filter(s => s.length>0);
+            }
+
+            function findUnknownItems(text){
+                const menu = getMenuNames();
+                if (!menu.length) return parseOrderItems(text);
+                const normMenu = menu.map(normalizeText);
+                const items = parseOrderItems(text);
+                const unknown = [];
+                for (const it of items) {
+                    const n = normalizeText(it);
+                    const ok = normMenu.includes(n);
+                    if (!ok) unknown.push(it);
+                }
+                return unknown;
+            }
+
+            function validateDeliveryOrderText(text){
+                const ta = document.getElementById('deliveryOrder');
+                const unknown = findUnknownItems(text);
+                if (unknown.length) {
+                    const msg = `Ces éléments ne sont pas au menu: ${unknown.join(', ')}`;
+                    if (ta && ta.setCustomValidity) {
+                        ta.setCustomValidity(msg);
+                        if (typeof ta.reportValidity === 'function') ta.reportValidity();
+                    } else {
+                        alert(msg);
+                    }
+                    return false;
+                }
+                if (ta && ta.setCustomValidity) ta.setCustomValidity('');
+                return true;
+            }
+
+            const restaurantPhoneText = '+212612910010';
             const restaurantWaDigits = digitsOnly(restaurantPhoneText) || '212000000000';
 
             function openWhatsApp(message){
@@ -870,26 +945,37 @@
             }
 
             const deliveryWaBtn = document.getElementById('deliveryWhatsAppBtn');
-            if (deliveryWaBtn) {
-                deliveryWaBtn.addEventListener('click', () => {
-                    const name = (document.getElementById('deliveryName')?.value || '').trim();
-                    const phone = (document.getElementById('deliveryPhone')?.value || '').trim();
-                    const address = (document.getElementById('deliveryAddress')?.value || '').trim();
-                    const zip = (document.getElementById('deliveryZip')?.value || '').trim();
-                    const city = (document.getElementById('deliveryCity')?.value || '').trim();
-                    const dt = (document.getElementById('deliveryDatetime')?.value || '').trim();
-                    const order = (document.getElementById('deliveryOrder')?.value || '').trim();
-                    const notes = (document.getElementById('deliveryNotes')?.value || '').trim();
-                    const lines = [
-                        'Bonjour, je souhaite passer une commande en livraison.',
-                        name ? `Nom: ${name}` : null,
-                        phone ? `Téléphone: ${phone}` : null,
-                        (address || zip || city) ? `Adresse: ${[address, zip, city].filter(Boolean).join(', ')}` : null,
-                        dt ? `Date/Heure souhaitée: ${dt}` : null,
-                        order ? `Commande: ${order}` : null,
-                        notes ? `Instructions: ${notes}` : null,
-                    ].filter(Boolean);
-                    openWhatsApp(lines.join('\n'));
+                if (deliveryWaBtn) {
+                    deliveryWaBtn.addEventListener('click', () => {
+                        const name = (document.getElementById('deliveryName')?.value || '').trim();
+                        const phone = (document.getElementById('deliveryPhone')?.value || '').trim();
+                        const address = (document.getElementById('deliveryAddress')?.value || '').trim();
+                        const zip = (document.getElementById('deliveryZip')?.value || '').trim();
+                        const city = (document.getElementById('deliveryCity')?.value || '').trim();
+                        const dt = (document.getElementById('deliveryDatetime')?.value || '').trim();
+                        const order = (document.getElementById('deliveryOrder')?.value || '').trim();
+                        const notes = (document.getElementById('deliveryNotes')?.value || '').trim();
+                        if (!validateDeliveryOrderText(order)) return;
+                        const lines = [
+                            'Bonjour, je souhaite passer une commande en livraison.',
+                            name ? `Nom: ${name}` : null,
+                            phone ? `Téléphone: ${phone}` : null,
+                            (address || zip || city) ? `Adresse: ${[address, zip, city].filter(Boolean).join(', ')}` : null,
+                            dt ? `Date/Heure souhaitée: ${dt}` : null,
+                            order ? `Commande: ${order}` : null,
+                            notes ? `Instructions: ${notes}` : null,
+                        ].filter(Boolean);
+                        openWhatsApp(lines.join('\n'));
+                    });
+                }
+            
+            const deliveryOrderInput = document.getElementById('deliveryOrder');
+            if (deliveryOrderInput) {
+                deliveryOrderInput.addEventListener('input', () => {
+                    validateDeliveryOrderText(deliveryOrderInput.value || '');
+                });
+                deliveryOrderInput.addEventListener('blur', () => {
+                    validateDeliveryOrderText(deliveryOrderInput.value || '');
                 });
             }
 
