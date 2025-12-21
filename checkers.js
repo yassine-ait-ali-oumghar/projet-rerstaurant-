@@ -30,6 +30,49 @@ tailwind.config = {
 };
 
 (function () {
+    const SESSION_KEY = 'dt_session';
+    function safeJsonParse(v) { try { return JSON.parse(v); } catch { return null; } }
+    function loadSession() {
+        const raw = localStorage.getItem(SESSION_KEY);
+        const session = safeJsonParse(raw);
+        if (!session || !session.email) return null;
+        return session;
+    }
+
+    // Access Check
+    (function checkAccess() {
+        const session = loadSession();
+        if (!session) {
+            alert('Accès refusé : Vous devez être connecté pour jouer.');
+            window.location.href = 'html.html';
+            return;
+        }
+        
+        let hasAccess = false;
+        try {
+            // Check orders
+            const ordersKey = 'dt_orders_' + session.email;
+            const rawOrders = localStorage.getItem(ordersKey);
+            const orders = rawOrders ? JSON.parse(rawOrders) : [];
+            if (Array.isArray(orders) && orders.length > 0) hasAccess = true;
+            
+            // Check reservations
+            if (!hasAccess) {
+                const rawRes = localStorage.getItem('dt_reservations');
+                const allRes = rawRes ? JSON.parse(rawRes) : [];
+                if (Array.isArray(allRes)) {
+                    const myRes = allRes.find(r => r && r.byEmail === session.email);
+                    if (myRes) hasAccess = true;
+                }
+            }
+        } catch (e) {}
+        
+        if (!hasAccess) {
+            alert('Accès refusé : Vous devez passer une commande ou réserver une table pour débloquer les mini-jeux.');
+            window.location.href = 'html.html';
+        }
+    })();
+
     const resetFx = document.getElementById('resetFx');
     function playResetFx(done) {
         if (!resetFx) {

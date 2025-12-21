@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>casa cocinera - Restaurant Fine Dining</title>
+    <title>dar lbenna - Restaurant Fine Dining</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@
         <div class="mx-auto flex w-full max-w-7xl flex-nowrap items-center justify-between gap-4 px-5 py-5 md:px-10">
             <a href="#accueil" class="group inline-flex items-center gap-2 font-display text-xl font-bold tracking-tight text-brand-bronze">
                 <span class="relative">
-                    casa cocinera
+                    dar lbenna
                     <span class="pointer-events-none absolute -bottom-1 left-0 h-px w-0 bg-brand-accent/80 transition-all duration-500 group-hover:w-full"></span>
                 </span>
                 <span class="text-sm text-brand-accent">★</span>
@@ -316,7 +316,6 @@
                         <div class="grid grid-cols-3 gap-2" data-auth-allow>
                             <button id="adminTabUsers" type="button" class="border border-brand-line/80 bg-white px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink" data-auth-allow>Users</button>
                             <button id="adminTabProducts" type="button" class="border border-brand-line/80 bg-brand-paper px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Products</button>
-                            <button id="adminTabDeliveries" type="button" class="border border-brand-line/80 bg-brand-paper px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Livreur</button>
                         </div>
 
                         <div id="adminUsersPanel" class="mt-8" data-auth-allow>
@@ -423,34 +422,6 @@
                                     </div>
                                     <div id="adminProductsList" class="mt-6 space-y-3" data-auth-allow></div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div id="adminDeliveriesPanel" class="auth-hidden mt-8" data-auth-allow>
-                            <div class="mb-4 flex flex-wrap items-center justify-between gap-2" data-auth-allow>
-                                <div data-auth-allow>
-                                    <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Livraisons</div>
-                                    <div class="mt-1 text-sm text-brand-ink" data-auth-allow>Suivi: En préparation · En cours · Livré</div>
-                                </div>
-                                <div class="flex flex-wrap items-center gap-2" data-auth-allow>
-                                    <select id="adminDeliveriesFilter" class="border border-brand-line/80 bg-white px-4 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink" data-auth-allow>
-                                        <option value="all">All</option>
-                                        <option value="COOKING">En préparation</option>
-                                        <option value="IN_PROGRESS">En cours</option>
-                                        <option value="DELIVERED">Livré</option>
-                                    </select>
-                                    <button id="adminDeliveriesClear" type="button" class="border border-red-300 bg-red-50 px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-red-700 transition-all duration-300 hover:-translate-y-0.5" data-auth-allow>
-                                        Clear
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="border border-brand-line/80 bg-white p-6" data-auth-allow>
-                                <div class="flex items-end justify-between gap-4" data-auth-allow>
-                                    <h3 class="font-display text-2xl font-bold text-brand-ink" data-auth-allow>Liste</h3>
-                                    <span id="adminDeliveriesCount" class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>0</span>
-                                </div>
-                                <div id="adminDeliveriesList" class="mt-6 space-y-3" data-auth-allow></div>
                             </div>
                         </div>
                     </div>
@@ -562,38 +533,38 @@
                     <div class="mt-7 grid gap-6 lg:grid-cols-3" id="entreesGrid">
                         <div data-menu-card="1" class="group overflow-hidden border border-brand-line/80 bg-white shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lift">
                             <div class="overflow-hidden">
-                                <img src="https://images.unsplash.com/photo-1544025162-d76694265947?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80" alt="Foie Gras" class="h-56 w-full object-fill transition-transform duration-700 group-hover:scale-[1.05]">
+                                <img src="viande-grillee-a-la-sauce-teriyaki-dans-une-feuille-de-laitue-avec-salade-de-chou-rouge-et-citron.jpg" alt="Bœuf teriyaki en feuille de laitue" class="h-56 w-full object-fill transition-transform duration-700 group-hover:scale-[1.05]">
                             </div>
                             <div class="p-6">
                                 <div class="flex items-start justify-between gap-4">
-                                    <h4 class="font-display text-xl font-bold text-brand-ink">Foie Gras Maison</h4>
-                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">28 DH</span>
+                                    <h4 class="font-display text-xl font-bold text-brand-ink">Bœuf teriyaki en feuille de laitue</h4>
+                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">28€</span>
                                 </div>
-                                <p class="mt-3 text-sm leading-relaxed text-brand-muted">Foie gras de canard mi-cuit, chutney de figues caramélisées, pain brioche toasté au beurre</p>
+                                <p class="mt-3 text-sm leading-relaxed text-brand-muted">Viande grillée tendre nappée de sauce teriyaki, servie dans une feuille de laitue croquante, accompagnée d’une salade fraîche de chou rouge relevée d’une touche de citron pour un équilibre parfait entre douceur, fraîcheur et acidité.</p>
                             </div>
                         </div>
                         <div data-menu-card="1" class="group overflow-hidden border border-brand-line/80 bg-white shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lift">
                             <div class="overflow-hidden">
-                                <img src="https://images.unsplash.com/photo-1559847844-5315695dadae?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80" alt="Saint-Jacques" class="h-56 w-full object-fill transition-transform duration-700 group-hover:scale-[1.05]">
+                                <img src="kanape-a-melange-salade-vue-cote.jpg" alt="Canapé de salade fraîche" class="h-56 w-full object-fill transition-transform duration-700 group-hover:scale-[1.05]">
                             </div>
                             <div class="p-6">
                                 <div class="flex items-start justify-between gap-4">
-                                    <h4 class="font-display text-xl font-bold text-brand-ink">Saint-Jacques Rôties</h4>
-                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">32 DH</span>
+                                    <h4 class="font-display text-xl font-bold text-brand-ink">Canapé de salade fraîche</h4>
+                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">32€</span>
                                 </div>
-                                <p class="mt-3 text-sm leading-relaxed text-brand-muted">Coquilles Saint-Jacques de Normandie, purée de panais crémeuse, beurre noisette et ciboulette</p>
+                                <p class="mt-3 text-sm leading-relaxed text-brand-muted">Canapé léger garni d’un mélange de salades croquantes, présenté en vue de côté pour mettre en valeur les textures et la fraîcheur des ingrédients. Idéal en entrée ou en apéritif.</p>
                             </div>
                         </div>
                         <div data-menu-card="1" class="group overflow-hidden border border-brand-line/80 bg-white shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lift">
                             <div class="overflow-hidden">
-                                <img src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80" alt="Velouté" class="h-56 w-full object-fill transition-transform duration-700 group-hover:scale-[1.05]">
+                                <img src="viande-frite-servie-avec-tomate-sauce-et-fromage-fume.jpg" alt="Viande frite au fromage fumé" class="h-56 w-full object-fill transition-transform duration-700 group-hover:scale-[1.05]">
                             </div>
                             <div class="p-6">
                                 <div class="flex items-start justify-between gap-4">
-                                    <h4 class="font-display text-xl font-bold text-brand-ink">Velouté de Potiron</h4>
-                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">18 DH</span>
+                                    <h4 class="font-display text-xl font-bold text-brand-ink">Viande frite au fromage fumé</h4>
+                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">18€</span>
                                 </div>
-                                <p class="mt-3 text-sm leading-relaxed text-brand-muted">Crème de potiron bio, huile de truffe noire, croûtons à l'ail et parmesan</p>
+                                <p class="mt-3 text-sm leading-relaxed text-brand-muted">Morceaux de viande croustillants servis avec des frites dorées, nappés d’une sauce tomate savoureuse et sublimés par un fromage fumé fondant pour un plat riche et gourmand.</p>
                             </div>
                         </div>
                         <div id="dynamicEntrees" class="contents"></div>
@@ -608,36 +579,36 @@
                     <div class="mt-7 grid gap-6 lg:grid-cols-3" id="platsGrid">
                         <div data-menu-card="1" class="group overflow-hidden border border-brand-line/80 bg-white shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lift">
                             <div class="overflow-hidden">
-                                <img src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80" alt="Bœuf Wagyu" class="h-56 w-full object-fill transition-transform duration-700 group-hover:scale-[1.05]">
+                                <img src="nsplsh_5565596b71516834506f49~mv2_d_5000_3338_s_4_2.avif" alt="BBQ Marinated Ribs Pork (2 RACK)" class="h-56 w-full object-fill transition-transform duration-700 group-hover:scale-[1.05]">
                             </div>
                             <div class="p-6">
                                 <div class="flex items-start justify-between gap-4">
-                                    <h4 class="font-display text-xl font-bold text-brand-ink">Filet de Bœuf Wagyu</h4>
-                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">65 DH</span>
+                                    <h4 class="font-display text-xl font-bold text-brand-ink">BBQ Marinated Ribs Pork (2 RACK)</h4>
+                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">65€</span>
                                 </div>
-                                <p class="mt-3 text-sm leading-relaxed text-brand-muted">Filet de bœuf wagyu A5, gratin dauphinois traditionnel, légumes de saison rôtis, sauce au poivre</p>
+                                <p class="mt-3 text-sm leading-relaxed text-brand-muted">Deux racks de ribs de porc marinés et grillés au barbecue, tendres et juteux, enrobés d’une sauce BBQ fumée et légèrement sucrée pour une explosion de saveurs.</p>
                             </div>
                         </div>
                         <div data-menu-card="1" class="group overflow-hidden border border-brand-line/80 bg-white shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lift">
                             <div class="overflow-hidden">
-                                <img src="https://images.unsplash.com/photo-1544025162-d76694265947?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80" alt="Bar" class="h-56 w-full object-fill transition-transform duration-700 group-hover:scale-[1.05]">
+                                <img src="vue-de-dessus-de-la-salade-de-viande-avec-du-poivron-tomate-et-du-mais-sur-une-plaque.jpg" alt="Salade de viande colorée" class="h-56 w-full object-fill transition-transform duration-700 group-hover:scale-[1.05]">
                             </div>
                             <div class="p-6">
                                 <div class="flex items-start justify-between gap-4">
-                                    <h4 class="font-display text-xl font-bold text-brand-ink">Bar de Ligne</h4>
-                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">42 DH</span>
+                                    <h4 class="font-display text-xl font-bold text-brand-ink">Salade de viande colorée</h4>
+                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">42€</span>
                                 </div>
-                                <p class="mt-3 text-sm leading-relaxed text-brand-muted">Bar frais de ligne, risotto crémeux aux champignons de Paris, émulsion au citron et basilic</p>
+                                <p class="mt-3 text-sm leading-relaxed text-brand-muted">Salade savoureuse composée de viande tendre, de poivrons croquants, de tomates fraîches et de maïs sucré, présentée vue de dessus sur une plaque pour mettre en valeur ses couleurs et sa fraîcheur.</p>
                             </div>
                         </div>
                         <div data-menu-card="1" class="group overflow-hidden border border-brand-line/80 bg-white shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lift">
                             <div class="overflow-hidden">
-                                <img src="https://images.unsplash.com/photo-1559847844-5315695dadae?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80" alt="Canard" class="h-56 w-full object-fill transition-transform duration-700 group-hover:scale-[1.05]">
+                                <img src="canard a l orange.jpg" alt="Canard" class="h-56 w-full object-fill transition-transform duration-700 group-hover:scale-[1.05]">
                             </div>
                             <div class="p-6">
                                 <div class="flex items-start justify-between gap-4">
                                     <h4 class="font-display text-xl font-bold text-brand-ink">Canard à l'Orange</h4>
-                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">38 DH</span>
+                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">38€</span>
                                 </div>
                                 <p class="mt-3 text-sm leading-relaxed text-brand-muted">Magret de canard fermier, sauce à l'orange grand-marnier, pommes de terre rôties au thym</p>
                             </div>
@@ -659,7 +630,7 @@
                             <div class="p-6">
                                 <div class="flex items-start justify-between gap-4">
                                     <h4 class="font-display text-xl font-bold text-brand-ink">Soufflé au Chocolat</h4>
-                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">16 DH</span>
+                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">16€</span>
                                 </div>
                                 <p class="mt-3 text-sm leading-relaxed text-brand-muted">Soufflé chaud au chocolat Valrhona 70%, glace vanille de Madagascar, coulis de fruits rouges</p>
                             </div>
@@ -671,7 +642,7 @@
                             <div class="p-6">
                                 <div class="flex items-start justify-between gap-4">
                                     <h4 class="font-display text-xl font-bold text-brand-ink">Tarte Tatin</h4>
-                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">14 DH</span>
+                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">14€</span>
                                 </div>
                                 <p class="mt-3 text-sm leading-relaxed text-brand-muted">Tarte tatin aux pommes Golden, crème fraîche de Normandie, caramel beurre salé</p>
                             </div>
@@ -683,7 +654,7 @@
                             <div class="p-6">
                                 <div class="flex items-start justify-between gap-4">
                                     <h4 class="font-display text-xl font-bold text-brand-ink">Millefeuille</h4>
-                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">15 DH</span>
+                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">15€</span>
                                 </div>
                                 <p class="mt-3 text-sm leading-relaxed text-brand-muted">Millefeuille maison, crème pâtissière vanille, glaçage miroir, fruits de saison</p>
                             </div>
@@ -721,7 +692,7 @@
                             <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 bg-[radial-gradient(circle_at_30%_20%,rgba(27,79,114,0.12),transparent_55%)]"></div>
                             <div class="text-2xl">💰</div>
                             <h3 class="mt-4 font-display text-xl font-bold text-brand-ink">Frais de Livraison</h3>
-                            <p class="mt-2 text-sm leading-relaxed text-brand-muted">5 DH de frais de livraison. Gratuit à partir de 50 DH de commande</p>
+                            <p class="mt-2 text-sm leading-relaxed text-brand-muted">5€ de frais de livraison. Gratuit à partir de 50€ de commande</p>
                         </div>
                         <div class="group relative overflow-hidden border border-brand-line/80 bg-white/75 p-6 shadow-soft backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:shadow-lift">
                             <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 bg-[radial-gradient(circle_at_30%_20%,rgba(212,175,55,0.14),transparent_55%)]"></div>
@@ -768,13 +739,9 @@
                             </div>
                             <div>
                                 <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Adresse de livraison</label>
-                                <input id="deliveryAddress" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm text-brand-ink outline-none transition-all duration-300 focus:border-brand-accent" type="text" placeholder="123 Rue de la République, 75008 Paris" required>
+                                <input id="deliveryAddress" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm text-brand-ink outline-none transition-all duration-300 focus:border-brand-accent" type="text" placeholder="123 Rue de la République, Casa" required>
                             </div>
                             <div class="grid gap-5 md:grid-cols-2">
-                                <div>
-                                    <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Code postal</label>
-                                    <input id="deliveryZip" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm text-brand-ink outline-none transition-all duration-300 focus:border-brand-accent" type="text" placeholder="75008" required>
-                                </div>
                                 <div>
                                     <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Ville</label>
                                     <input id="deliveryCity" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm text-brand-ink outline-none transition-all duration-300 focus:border-brand-accent" type="text" placeholder="casa" required>
@@ -826,13 +793,13 @@
             <div class="grid gap-10 lg:grid-cols-4">
                 <div>
                     <div class="inline-flex items-center gap-2 font-display text-xl font-bold tracking-tight">
-                        <span>casa cocinera</span>
+                        <span>dar lbenna</span>
                         <span class="text-sm text-brand-gold">★</span>
                     </div>
                     <p class="mt-5 text-sm leading-relaxed text-white/75">Une expérience culinaire d'exception depuis 2010. Où chaque plat raconte une histoire et chaque repas devient un souvenir inoubliable.</p>
                     <div class="mt-6 flex flex-wrap gap-4 text-xs font-semibold uppercase tracking-[0.22em]">
                         <a href="#" class="text-white/70 transition-colors duration-300 hover:text-white">Facebook</a>
-                        <a href="#" class="text-white/70 transition-colors duration-300 hover:text-white">Instagram</a>
+                        <a href="https://www.instagram.com/yas__sine_ait/" class="text-white/70 transition-colors duration-300 hover:text-white">Instagram</a>
                         <a href="#" class="text-white/70 transition-colors duration-300 hover:text-white">Twitter</a>
                     </div>
                 </div>
@@ -867,7 +834,7 @@
                 </div>
             </div>
             <div class="mt-12 flex flex-col gap-3 border-t border-white/10 pt-8 text-sm text-white/60 md:flex-row md:items-center md:justify-between">
-                <p>&copy; 2025 casa cocinera. Tous droits réservés.</p>
+                <p>&copy; 2025 dar lbenna. Tous droits réservés.</p>
                 <p>Conçu avec passion pour l'excellence culinaire</p>
             </div>
         </div>
@@ -912,7 +879,7 @@
                         <div class="mt-5 flex flex-wrap items-center justify-between gap-3 border border-brand-line/80 bg-brand-cream px-5 py-4">
                             <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Quantité</div>
                             <div class="flex items-center gap-2">
-                                <button id="productModalQtyMinus" type="button" class="h-10 w-10 border border-brand-line/80 bg-white text-sm font-semibold text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">−</button>
+                                <button id="productModalQtyMinus" type="button" class="h-10 w-10 border border-brand-line/80 bg-white text-sm font-semibold text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">-</button>
                                 <div id="productModalQty" class="min-w-[44px] text-center text-sm font-semibold text-brand-ink">1</div>
                                 <button id="productModalQtyPlus" type="button" class="h-10 w-10 border border-brand-line/80 bg-white text-sm font-semibold text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">+</button>
                             </div>
@@ -981,7 +948,7 @@
             <div id="authPanel" class="auth-panel-enter w-full border border-white/10 bg-brand-paper shadow-lift max-h-[calc(100vh-3rem)] overflow-y-auto" data-auth-allow>
                 <div class="flex items-center justify-between border-b border-brand-line/80 px-7 py-6" data-auth-allow>
                     <div data-auth-allow>
-                        <div class="text-xs font-semibold uppercase tracking-[0.32em] text-brand-primary" data-auth-allow>casa cocinera</div>
+                        <div class="text-xs font-semibold uppercase tracking-[0.32em] text-brand-primary" data-auth-allow>dar tiyaba</div>
                         <h3 class="mt-2 font-display text-2xl font-bold tracking-tight text-brand-ink" data-auth-allow>Login / Register</h3>
                     </div>
                     <button id="authCloseBtn" type="button" class="h-10 w-10 border border-brand-line/80 bg-white text-sm font-semibold text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" data-auth-allow>

@@ -1,4 +1,4 @@
-tailwind.config = {
+﻿tailwind.config = {
     theme: {
         extend: {
             fontFamily: {
@@ -351,7 +351,34 @@ tailwind.config = {
                 if (authUserBadge) {
                     authUserBadge.classList.remove('actions-open');
                 }
+
+                // Mini Games Access Check
+                const miniGamesLink = document.querySelector('a[href="mini-games.html"]');
+                if (miniGamesLink) {
+                    let hasAccess = false;
+                    if (loggedIn) {
+                        try {
+                            // Check orders
+                            const ordersKey = 'dt_orders_' + session.email;
+                            const rawOrders = localStorage.getItem(ordersKey);
+                            const orders = rawOrders ? JSON.parse(rawOrders) : [];
+                            if (Array.isArray(orders) && orders.length > 0) hasAccess = true;
+                            
+                            // Check reservations
+                            if (!hasAccess) {
+                                const rawRes = localStorage.getItem('dt_reservations');
+                                const allRes = rawRes ? JSON.parse(rawRes) : [];
+                                if (Array.isArray(allRes)) {
+                                    const myRes = allRes.find(r => r && r.byEmail === session.email);
+                                    if (myRes) hasAccess = true;
+                                }
+                            }
+                        } catch (e) {}
+                    }
+                    miniGamesLink.style.display = hasAccess ? '' : 'none';
+                }
             }
+            window.dtRenderAuthState = renderAuthState;
 
             function setProfileModalOpen(open) {
                 if (!profileModal) return;
@@ -644,18 +671,39 @@ tailwind.config = {
                     ];
                     function makeRoute(from, to, steps) {
                         const out = [from];
-                        const n = Math.max(3, steps || 6);
-                        for (let i = 1; i < n; i++) {
-                            const t = i / n;
-                            out.push([
-                                from[0] + (to[0] - from[0]) * t + (Math.random() - 0.5) * 0.0015,
-                                from[1] + (to[1] - from[1]) * t + (Math.random() - 0.5) * 0.0015,
-                            ]);
+                        // Generate a more realistic path with "turns"
+                        // We create 2 intermediate waypoints to simulate city blocks
+                        const mid1 = [
+                            from[0] + (to[0] - from[0]) * 0.33 + (Math.random() - 0.5) * 0.004,
+                            from[1] + (to[1] - from[1]) * 0.33 + (Math.random() - 0.5) * 0.004
+                        ];
+                        const mid2 = [
+                            from[0] + (to[0] - from[0]) * 0.66 + (Math.random() - 0.5) * 0.004,
+                            from[1] + (to[1] - from[1]) * 0.66 + (Math.random() - 0.5) * 0.004
+                        ];
+
+                        const totalPoints = Math.max(20, steps || 100);
+                        const pointsPerSeg = Math.floor(totalPoints / 3);
+
+                        // Helper to interpolate
+                        function addSeg(p1, p2, count) {
+                            for (let i = 1; i <= count; i++) {
+                                const t = i / count;
+                                out.push([
+                                    p1[0] + (p2[0] - p1[0]) * t + (Math.random() - 0.5) * 0.0002, // Less jitter for smoother look
+                                    p1[1] + (p2[1] - p1[1]) * t + (Math.random() - 0.5) * 0.0002
+                                ]);
+                            }
                         }
-                        out.push(to);
+
+                        addSeg(from, mid1, pointsPerSeg);
+                        addSeg(mid1, mid2, pointsPerSeg);
+                        addSeg(mid2, to, pointsPerSeg);
+                        
                         return out;
                     }
-                    const route = makeRoute(restaurant, destination, 7);
+                    // Increase steps for smoother, slower animation
+                    const route = makeRoute(restaurant, destination, 120);
 
                     if (!map) {
                         map = L.map('map', { zoomControl: true }).setView(restaurant, 13);
@@ -678,9 +726,36 @@ tailwind.config = {
 
                     const driverIcon = L.divIcon({
                         className: '',
-                        html: `<div class="driver-icon"><span class="driver-bike" aria-hidden="true">🏍️</span></div>`,
-                        iconSize: [36, 36],
-                        iconAnchor: [18, 18],
+                        html: `
+                        <div style="
+                            background-color: #fff;
+                            border: 2px solid #8b6914;
+                            border-radius: 50%;
+                            width: 44px;
+                            height: 44px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                            position: relative;
+                        ">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="26" height="26" style="color: #8b6914;">
+                                <path d="M19.44 9.03L15.41 5H11v2h3.55l3.29 3.29C16.39 10.56 15 11.44 15 13c0 1.66 1.34 3 3 3s3-1.34 3-3c0-1.27-.83-2.35-1.98-2.78zM18 14c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zM5 11c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm0 4c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/>
+                                <path d="M11 11h2v4h-2zm-1.88.12L6 9H2v2h3.17l2.12 1.41z"/>
+                            </svg>
+                            <div style="
+                                position: absolute;
+                                bottom: -4px;
+                                right: -4px;
+                                width: 14px;
+                                height: 14px;
+                                background-color: #22c55e;
+                                border: 2px solid #fff;
+                                border-radius: 50%;
+                            "></div>
+                        </div>`,
+                        iconSize: [44, 44],
+                        iconAnchor: [22, 22],
                     });
 
                     if (!driverMarker) {
@@ -691,10 +766,10 @@ tailwind.config = {
                     }
 
                     const statusSteps = [
-                        { pill: 'Commande reçue', text: 'Votre commande est en cours de préparation…', pct: 15 },
-                        { pill: 'En préparation', text: 'Le chef prépare vos plats avec soin…', pct: 35 },
-                        { pill: 'En route (moto)', text: 'Le livreur à moto est en route vers votre adresse.', pct: 60 },
-                        { pill: 'Livré', text: 'Votre commande est arrivée. Bon appétit !', pct: 100 },
+                        { pill: 'Commande reçue', text: 'Votre commande a été confirmée et est en cours de préparation au restaurant.', pct: 15 },
+                        { pill: 'En préparation', text: 'Le chef prépare vos plats avec soin. Votre commande sera bientôt prête.', pct: 35 },
+                        { pill: 'Livreur en route', text: 'Le livreur a pris la route avec votre commande. Il se dirige vers votre adresse.', pct: 60 },
+                        { pill: 'Livré', text: 'Votre commande a été livrée avec succès. Bon appétit !', pct: 100 },
                     ];
 
                     let stepIndex = 0;
@@ -746,20 +821,22 @@ tailwind.config = {
                             if (etaEl) etaEl.textContent = 'ETA: 0 min';
                             if (distanceEl) distanceEl.textContent = 'Distance: 0.0 km';
                             (function finalizeOrderOnDelivery(){
-                                const cart = loadCart();
+                                const cart = window.dtLoadCart ? window.dtLoadCart() : [];
                                 if (cart && cart.length) {
                                     const total = cart.reduce((sum, it) => sum + (Number(it.price) || 0) * (Number(it.qty) || 1), 0);
-                                    const orders = loadOrders();
+                                    const orders = window.dtLoadOrders ? window.dtLoadOrders() : [];
                                     const id = String(Date.now());
                                     const createdAt = new Date().toLocaleString();
                                     orders.push({ id, createdAt, total, items: cart, status: 'delivered' });
-                                    saveOrders(orders);
-                                    saveCart([]);
-                                    renderCart();
-                                    renderOrders();
-                                    alert('Commande livrée au client. Merci pour votre commande !');
-                                    setOrdersOpen(true);
+                                    if (window.dtSaveOrders) window.dtSaveOrders(orders);
                                 }
+                                // Toujours vider le panier à la fin de la livraison
+                                if (window.dtSaveCart) window.dtSaveCart([]);
+                                if (window.dtRenderCart) window.dtRenderCart();
+                                if (window.dtRenderOrders) window.dtRenderOrders();
+                                if (window.dtRenderAuthState) window.dtRenderAuthState();
+                                alert('Commande livrée avec succès ! Merci pour votre commande.');
+                                if (window.dtSetOrdersOpen) window.dtSetOrdersOpen(true);
                             })();
                             window.clearInterval(window.__dtDeliveryInterval);
                             window.__dtDeliveryInterval = null;
@@ -772,7 +849,7 @@ tailwind.config = {
                         const eta = Math.max(1, Math.round(remaining * 5));
                         if (etaEl) etaEl.textContent = `ETA: ~${eta} min`;
                         if (distanceEl) distanceEl.textContent = `Distance: ~${remaining.toFixed(1)} km`;
-                    }, 1000);
+                    }, 250);
                     return;
                 }
             }, true);
@@ -784,7 +861,7 @@ tailwind.config = {
                 return `https://wa.me/${n}?text=${msg}`;
             }
 
-            const restaurantPhoneText = '+212612910010';
+            const restaurantPhoneText = '+91 95865 38447';
             const restaurantWaDigits = digitsOnly(restaurantPhoneText) || '212000000000';
 
             function openWhatsApp(message){
@@ -1153,21 +1230,24 @@ tailwind.config = {
             }
 
             function setAdminTab(tab) {
-                const usersTab = tab === 'users';
-                if (adminUsersPanel) adminUsersPanel.classList.toggle('auth-hidden', !usersTab);
-                if (adminProductsPanel) adminProductsPanel.classList.toggle('auth-hidden', usersTab);
+                const pUsers = document.getElementById('adminUsersPanel');
+                const pProducts = document.getElementById('adminProductsPanel');
+                const tUsers = document.getElementById('adminTabUsers');
+                const tProducts = document.getElementById('adminTabProducts');
 
-                if (adminTabUsers) {
-                    adminTabUsers.className = usersTab
-                        ? 'border border-brand-line/80 bg-white px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink'
-                        : 'border border-brand-line/80 bg-brand-paper px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted';
-                }
-                if (adminTabProducts) {
-                    adminTabProducts.className = !usersTab
-                        ? 'border border-brand-line/80 bg-white px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink'
-                        : 'border border-brand-line/80 bg-brand-paper px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted';
-                }
+                const isUsers = tab === 'users';
+                const isProducts = tab === 'products';
+
+                if (pUsers) pUsers.classList.toggle('auth-hidden', !isUsers);
+                if (pProducts) pProducts.classList.toggle('auth-hidden', !isProducts);
+
+                const activeClass = 'border border-brand-line/80 bg-white px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink';
+                const inactiveClass = 'border border-brand-line/80 bg-brand-paper px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted';
+
+                if (tUsers) tUsers.className = isUsers ? activeClass : inactiveClass;
+                if (tProducts) tProducts.className = isProducts ? activeClass : inactiveClass;
             }
+            window.dtSetAdminTab = setAdminTab;
 
             function renderUsersList() {
                 if (!adminUsersList) return;
@@ -1202,14 +1282,14 @@ tailwind.config = {
                     const price = typeof p.price === 'number' ? p.price.toFixed(2) : String(p.price || '0');
                     const category = String(p.category || '').toLowerCase();
                     const img = p.image || '';
-                    const categoryLabel = category === 'dessert' ? 'Desserts' : category === 'plat' ? 'Plats Principaux' : 'Entrées';
+                    const categoryLabel = category === 'dessert' ? 'Desserts' : category === 'plat' ? 'Plats Principaux' : 'EntrÃ©es';
                     return `
 <div class="flex items-center justify-between gap-3 border border-brand-line/80 bg-brand-paper px-4 py-3">
   <div class="flex min-w-0 items-center gap-3">
     ${img ? `<img src="${img}" alt="" class="h-10 w-10 flex-none object-cover" />` : ''}
     <div class="min-w-0">
     <div class="truncate text-sm font-semibold text-brand-ink">${name}</div>
-    <div class="text-xs uppercase tracking-[0.22em] text-brand-muted">${categoryLabel} · ${price} DH</div>
+    <div class="text-xs uppercase tracking-[0.22em] text-brand-muted">${categoryLabel} · ${price} €</div>
     </div>
   </div>
   <div class="flex flex-wrap items-center gap-2">
@@ -1244,7 +1324,7 @@ tailwind.config = {
   <div class="p-6">
     <div class="flex items-start justify-between gap-4">
       <h4 class="font-display text-xl font-bold text-brand-ink">${name}</h4>
-      <span class="text-sm font-semibold tracking-wide text-brand-bronze">${price} DH</span>
+      <span class="text-sm font-semibold tracking-wide text-brand-bronze">${price}€</span>
     </div>
     ${desc ? `<p class="mt-3 text-sm leading-relaxed text-brand-muted">${desc}</p>` : ''}
   </div>
@@ -1359,10 +1439,12 @@ tailwind.config = {
                 const cart = safeJsonParse(raw);
                 return Array.isArray(cart) ? cart : [];
             }
+            window.dtLoadCart = loadCart;
 
             function saveCart(cart) {
                 localStorage.setItem(CART_KEY, JSON.stringify(cart));
             }
+            window.dtSaveCart = saveCart;
 
             function loadSession() {
                 const raw = localStorage.getItem('dt_session');
@@ -1382,10 +1464,12 @@ tailwind.config = {
                 const orders = safeJsonParse(raw);
                 return Array.isArray(orders) ? orders : [];
             }
+            window.dtLoadOrders = loadOrders;
 
             function saveOrders(orders) {
                 localStorage.setItem(currentUserKey('orders'), JSON.stringify(orders));
             }
+            window.dtSaveOrders = saveOrders;
 
             function setOrdersOpen(open) {
                 if (!ordersModal) return;
@@ -1399,6 +1483,7 @@ tailwind.config = {
                     panel.classList.add('auth-panel-in');
                 }
             }
+            window.dtSetOrdersOpen = setOrdersOpen;
 
             function stringifyCartForDelivery(cart) {
                 return cart.map((it) => {
@@ -1440,8 +1525,9 @@ tailwind.config = {
                     const lines = items.map((it) => {
                         const qty = Number(it.qty) || 1;
                         const name = it.name || '';
+                        const price = Number(it.price) || 0;
                         const notes = (it.notes || '').trim();
-                        return `<div class="text-sm text-brand-ink"><span class="font-semibold">${qty}x</span> ${name}${notes ? ` <span class=\"text-xs text-brand-muted\">— ${notes.replace(/</g, '&lt;')}</span>` : ''}</div>`;
+                        return `<div class="text-sm text-brand-ink"><span class="font-semibold">${qty}x</span> ${name} <span class="text-xs text-brand-muted">(${formatMoney(price)} chacun)</span>${notes ? ` <span class=\"text-xs text-brand-muted\">— ${notes.replace(/</g, '&lt;')}</span>` : ''}</div>`;
                     }).join('');
 
                     return `
@@ -1462,11 +1548,12 @@ tailwind.config = {
 </div>`;
                 }).join('');
             }
+            window.dtRenderOrders = renderOrders;
 
             function formatMoney(n) {
                 const v = typeof n === 'number' && Number.isFinite(n) ? n : Number(n);
                 const num = Number.isFinite(v) ? v : 0;
-                return `${num.toFixed(2)} DH`;
+                return `${num.toFixed(2)} €`;
             }
 
             function parsePriceText(text) {
@@ -1541,7 +1628,7 @@ tailwind.config = {
       </div>
       ${notes ? `<div class="mt-3 border border-brand-line/80 bg-brand-paper px-3 py-2 text-xs leading-relaxed text-brand-muted"><span class="font-semibold text-brand-ink">Notes:</span> ${notes.replace(/</g, '&lt;')}</div>` : ''}
       <div class="mt-3 flex items-center gap-2">
-        <button type="button" class="h-9 w-9 border border-brand-line/80 bg-white text-sm font-semibold text-brand-ink" data-cart-qty-minus="${idx}">−</button>
+        <button type="button" class="h-9 w-9 border border-brand-line/80 bg-white text-sm font-semibold text-brand-ink" data-cart-qty-minus="${idx}">-</button>
         <div class="min-w-[34px] text-center text-sm font-semibold text-brand-ink">${qty}</div>
         <button type="button" class="h-9 w-9 border border-brand-line/80 bg-white text-sm font-semibold text-brand-ink" data-cart-qty-plus="${idx}">+</button>
       </div>
@@ -1552,6 +1639,7 @@ tailwind.config = {
 
                 cartTotal.textContent = formatMoney(total);
             }
+            window.dtRenderCart = renderCart;
 
             function applyMenuSearch(query) {
                 const q = String(query || '').trim().toLowerCase();
@@ -1758,6 +1846,7 @@ tailwind.config = {
                     saveCart([]);
                     renderCart();
                     renderOrders();
+                    renderAuthState();
                     setCartOpen(false);
                     return;
                 }

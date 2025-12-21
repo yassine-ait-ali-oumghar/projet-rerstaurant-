@@ -52,6 +52,40 @@ tailwind.config = {
                 return session;
             }
 
+            // Access Check
+            (function checkAccess() {
+                const session = loadSession();
+                if (!session) {
+                    alert('Accès refusé : Vous devez être connecté pour jouer.');
+                    window.location.href = 'html.html';
+                    return;
+                }
+                
+                let hasAccess = false;
+                try {
+                    // Check orders
+                    const ordersKey = 'dt_orders_' + session.email;
+                    const rawOrders = localStorage.getItem(ordersKey);
+                    const orders = rawOrders ? JSON.parse(rawOrders) : [];
+                    if (Array.isArray(orders) && orders.length > 0) hasAccess = true;
+                    
+                    // Check reservations
+                    if (!hasAccess) {
+                        const rawRes = localStorage.getItem('dt_reservations');
+                        const allRes = rawRes ? JSON.parse(rawRes) : [];
+                        if (Array.isArray(allRes)) {
+                            const myRes = allRes.find(r => r && r.byEmail === session.email);
+                            if (myRes) hasAccess = true;
+                        }
+                    }
+                } catch (e) {}
+                
+                if (!hasAccess) {
+                    alert('Accès refusé : Vous devez passer une commande ou réserver une table pour débloquer les mini-jeux.');
+                    window.location.href = 'html.html';
+                }
+            })();
+
             function loadUsers() {
                 const raw = localStorage.getItem(USERS_KEY);
                 const users = safeJsonParse(raw);
@@ -179,9 +213,9 @@ tailwind.config = {
                         rpsState.you = 0;
                         rpsState.bot = 0;
                         rpsState.draw = 0;
-                        if (rpsYou) rpsYou.textContent = '—';
-                        if (rpsBot) rpsBot.textContent = '—';
-                        if (rpsResult) rpsResult.textContent = '—';
+                        if (rpsYou) rpsYou.textContent = 'â€”';
+                        if (rpsBot) rpsBot.textContent = 'â€”';
+                        if (rpsResult) rpsResult.textContent = 'â€”';
                         renderRpsScore();
                     });
                 });
@@ -246,7 +280,7 @@ tailwind.config = {
                     c.disabled = !!st.winner || !!st.board[i];
                     c.classList.toggle('opacity-60', !!st.winner);
                 }
-                if (tttTurn) tttTurn.textContent = st.winner ? '—' : st.turn;
+                if (tttTurn) tttTurn.textContent = st.winner ? 'â€”' : st.turn;
 
                 if (tttStatus) {
                     if (st.winner === 'X') tttStatus.textContent = 'X wins';
@@ -265,7 +299,7 @@ tailwind.config = {
                 if (tttMode === 'solo') {
                     tttMatchKey = TTT_SOLO_KEY;
                     if (tttTwoPlayerPanel) tttTwoPlayerPanel.classList.add('auth-hidden');
-                    if (tttMatchId) tttMatchId.textContent = '—';
+                    if (tttMatchId) tttMatchId.textContent = 'â€”';
                     if (tttYouSymbol) tttYouSymbol.textContent = 'X';
                     const st = tttLoad(tttMatchKey);
                     tttRender(st);
@@ -273,8 +307,8 @@ tailwind.config = {
                 }
 
                 if (tttTwoPlayerPanel) tttTwoPlayerPanel.classList.remove('auth-hidden');
-                if (tttYouSymbol) tttYouSymbol.textContent = '—';
-                if (tttMatchId) tttMatchId.textContent = '—';
+                if (tttYouSymbol) tttYouSymbol.textContent = 'â€”';
+                if (tttMatchId) tttMatchId.textContent = 'â€”';
                 tttMatchKey = null;
             }
 
@@ -336,7 +370,7 @@ tailwind.config = {
                 tttMatchKey = key;
                 if (tttMatchId) tttMatchId.textContent = key;
                 const symbol = tttDetermineSymbol(me, state);
-                if (tttYouSymbol) tttYouSymbol.textContent = symbol || '—';
+                if (tttYouSymbol) tttYouSymbol.textContent = symbol || 'â€”';
                 tttRender(state);
 
                 tttPoll = setInterval(() => {
