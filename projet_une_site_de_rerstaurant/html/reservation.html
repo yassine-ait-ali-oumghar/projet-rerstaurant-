@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dar lbenna - Reservation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../css/reservation.css">
+</head>
+<body class="theme-basic min-h-screen font-sans text-brand-ink">
+  <nav class="sticky top-0 z-50 border-b border-brand-line/70 bg-brand-paper/80 backdrop-blur-xl">
+    <div class="mx-auto flex w-full max-w-7xl items-center justify-between px-5 py-5 md:px-10">
+      <a href="html.html" class="inline-flex items-center gap-2 font-display text-xl font-bold tracking-tight text-brand-bronze">
+        <span class="relative">dar lbenna</span><span class="text-sm text-brand-accent">★</span>
+      </a>
+      <div class="flex items-center gap-3">
+        <a href="html.html" class="border border-brand-line/80 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">Back</a>
+      </div>
+    </div>
+  </nav>
+  <main class="mx-auto w-full max-w-7xl px-5 py-10 md:px-10">
+    <div class="flex flex-col gap-3">
+      <div class="text-xs font-semibold uppercase tracking-[0.32em] text-brand-primary">Reservation</div>
+      <h1 class="font-display text-4xl font-bold tracking-tight text-brand-ink">Luxury Booking</h1>
+      <p class="max-w-2xl text-sm leading-relaxed text-brand-muted">Choose a class, then pick an available date + time. Double booking is blocked.</p>
+    </div>
+
+    <section id="adminPanel" class="theme-panel auth-hidden mt-10 border border-brand-line/80 bg-white p-7 shadow-soft">
+      <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Admin dashboard</div>
+          <h2 class="mt-2 font-display text-2xl font-bold text-brand-ink">Reservations</h2>
+        </div>
+        <div class="grid gap-3 md:grid-cols-3">
+          <div>
+            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Date</label>
+            <input id="fDate" type="date" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm outline-none focus:border-brand-accent" />
+          </div>
+          <div>
+            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Time</label>
+            <select id="fTime" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm outline-none focus:border-brand-accent"></select>
+          </div>
+          <div>
+            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Class</label>
+            <select id="fTier" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm outline-none focus:border-brand-accent">
+              <option value="">All</option><option value="basic">Basic</option><option value="silver">Silver</option><option value="gold">Gold</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="mt-6 flex items-center justify-between text-sm"><div class="font-semibold">Count</div><div id="adminCount" class="text-brand-muted">0</div></div>
+      <div id="adminList" class="mt-4 grid gap-3"></div>
+    </section>
+    <section class="mt-10 grid gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+      <div class="theme-panel border border-brand-line/80 bg-white p-7 shadow-soft">
+        <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Table class</div>
+        <h2 class="mt-2 font-display text-2xl font-bold text-brand-ink">Basic · Silver · Gold</h2>
+        <input id="tier" type="hidden" value="basic" />
+        <div class="mt-6 grid gap-3 lg:grid-cols-3">
+          <button type="button" class="tier is-on border border-brand-line/80 bg-white p-5 text-left shadow-soft" data-tier="basic">
+            <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Basic</div>
+            <div class="mt-2 font-display text-xl font-bold">Classic</div>
+            <div class="mt-2 text-sm text-brand-muted">Soft gray · minimal</div>
+          </button>
+          <button type="button" class="tier border border-brand-line/80 bg-white p-5 text-left shadow-soft" data-tier="silver">
+            <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Silver</div>
+            <div class="mt-2 font-display text-xl font-bold">Lumière</div>
+            <div class="mt-2 text-sm text-brand-muted">Reflection · glass feel</div>
+          </button>
+          <button type="button" class="tier border border-brand-line/80 bg-white p-5 text-left shadow-soft" data-tier="gold">
+            <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Gold</div>
+            <div class="mt-2 font-display text-xl font-bold">Prestige</div>
+            <div class="mt-2 text-sm text-brand-muted">Luxury shine · premium</div>
+          </button>
+        </div>
+        <div class="mt-8 grid gap-5">
+          <div>
+            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Date</label>
+            <input id="date" type="date" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm outline-none focus:border-brand-accent" required />
+          </div>
+          <div>
+            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Time (available)</label>
+            <select id="time" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm outline-none focus:border-brand-accent" required></select>
+          </div>
+          <div class="grid gap-5 md:grid-cols-2">
+            <div>
+              <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Table</label>
+              <select id="table" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm outline-none focus:border-brand-accent" required></select>
+            </div>
+            <div class="border border-brand-line/80 bg-brand-paper px-5 py-4">
+              <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Availability</div>
+              <div id="availability" class="mt-2 text-sm font-semibold text-brand-bronze">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="theme-panel border border-brand-line/80 bg-white p-7 shadow-soft">
+        <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Client</div>
+        <h2 class="mt-2 font-display text-2xl font-bold text-brand-ink">Your details</h2>
+        <form id="form" class="mt-8 space-y-5">
+          <div>
+            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Full name</label>
+            <input id="name" type="text" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm outline-none focus:border-brand-accent" required />
+          </div>
+          <div>
+            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Number of people</label>
+            <input id="people" type="number" min="1" max="12" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm outline-none focus:border-brand-accent" required />
+          </div>
+          <div>
+            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Phone (+212XXXXXXXXX)</label>
+            <input id="phone" type="tel" inputmode="tel" placeholder="+212612345678" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm outline-none focus:border-brand-accent" required />
+            <div class="mt-2 text-xs text-brand-muted">Must start with +212 and contain exactly 9 digits after.</div>
+          </div>
+          <div id="err" class="auth-hidden border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"></div>
+          <button type="submit" class="theme-cta group relative w-full overflow-hidden bg-brand-bronze px-7 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-white shadow-soft transition-all duration-500 hover:-translate-y-0.5 hover:bg-brand-accent hover:shadow-lift">Confirm reservation</button>
+        </form>
+      </div>
+    </section>
+  </main>
+  <div id="toast" aria-hidden="true">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div class="relative w-[min(560px,92vw)] border border-brand-line/80 bg-white p-7 shadow-lift">
+      <div class="text-xs font-semibold uppercase tracking-[0.32em] text-brand-primary">Reservation</div>
+      <h3 id="toastTitle" class="mt-2 font-display text-2xl font-bold text-brand-ink">Confirmed</h3>
+      <p id="toastText" class="mt-2 text-sm text-brand-muted">—</p>
+      <div class="mt-6 flex justify-end">
+        <button id="toastClose" type="button" class="border border-brand-line/80 bg-brand-paper px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink hover:border-brand-accent">OK</button>
+      </div>
+    </div>
+  </div>
+  <script src="../javascript/reservation.js"></script>
+  <script src="../javascript/lang.js"></script>
+</body>
+</html>

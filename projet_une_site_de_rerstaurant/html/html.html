@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dar lbenna - Restaurant Fine Dining</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/css.css">
+    <link rel="stylesheet" href="../css/intro.css">
+    <script src="../javascript/intro.js" defer></script>
+    <style>
+        body.dark-mode{ background:#000 !important; color:#facc15 !important; }
+        body.dark-mode nav{ background:rgba(0,0,0,0.85) !important; border-color:rgba(250,204,21,0.35) !important; }
+        body.dark-mode .bg-white{ background:#0b0b0b !important; }
+        body.dark-mode .bg-brand-paper{ background:#000 !important; }
+        body.dark-mode .bg-brand-cream{ background:#0f0f0f !important; }
+        body.dark-mode .text-brand-ink,
+        body.dark-mode .text-brand-muted,
+        body.dark-mode .text-brand-ink\/90,
+        body.dark-mode .text-brand-muted\/90,
+        body.dark-mode .text-brand-ink\/80,
+        body.dark-mode .text-brand-muted\/80{ color:#facc15 !important; opacity:1 !important; }
+        body.dark-mode .border-brand-line\/70,
+        body.dark-mode .border-brand-line\/80{ border-color:rgba(250,204,21,0.35) !important; }
+    </style>
+</head>
+<body>
+    <div id="introOverlay" aria-hidden="true">
+        <video id="introVideo" autoplay muted playsinline preload="auto">
+            <source src="../images/IMG_3906.mp4" type="video/mp4" />
+        </video>
+    </div>
+    <!-- Navigation -->
+    <nav class="fixed left-0 top-0 z-50 w-full border-b border-brand-line/70 bg-brand-paper/80 backdrop-blur-xl">
+        <div class="relative mx-auto flex w-full max-w-7xl flex-nowrap items-center justify-between gap-3 px-5 py-3 md:px-10 md:py-4">
+            <a href="#accueil" class="group inline-flex items-center gap-2 font-display text-xl font-bold tracking-tight text-brand-bronze">
+                <span class="relative">
+                    dar lbenna
+                    <span class="pointer-events-none absolute -bottom-1 left-0 h-px w-0 bg-brand-accent/80 transition-all duration-500 group-hover:w-full"></span>
+                </span>
+                <span class="text-sm text-brand-accent">★</span>
+            </a>
+
+            <div class="hidden flex-1 items-center justify-center md:flex">
+                <div class="flex w-full max-w-3xl items-center justify-center gap-5">
+                    <a href="#accueil" class="relative whitespace-nowrap text-[13px] tracking-wide text-brand-ink/90 transition-colors duration-300 hover:text-brand-primary" data-i18n="nav.home">Accueil</a>
+                    <a href="#menu" class="relative whitespace-nowrap text-[13px] tracking-wide text-brand-ink/90 transition-colors duration-300 hover:text-brand-primary" data-i18n="nav.menu">Menu</a>
+                    <a href="#a-propos" class="relative whitespace-nowrap text-[13px] tracking-wide text-brand-ink/90 transition-colors duration-300 hover:text-brand-primary" data-i18n="nav.about">À Propos</a>
+                    <a href="#livraison" class="relative whitespace-nowrap text-[13px] tracking-wide text-brand-ink/90 transition-colors duration-300 hover:text-brand-primary" data-i18n="nav.delivery">Livraison</a>
+                    <a href="mini-games.html" class="relative whitespace-nowrap text-[13px] tracking-wide text-brand-ink/90 transition-colors duration-300 hover:text-brand-primary" data-auth-allow data-i18n="nav.mini_games">Mini games</a>
+                    <a id="statsLink" href="stat.html" class="auth-hidden relative whitespace-nowrap text-[13px] tracking-wide text-brand-ink/90 transition-colors duration-300 hover:text-brand-primary" data-auth-allow data-i18n="nav.stats" hidden>Stats</a>
+                    <a id="adminGraphLink" href="graphe.html" class="auth-hidden relative whitespace-nowrap text-[13px] tracking-wide text-brand-ink/90 transition-colors duration-300 hover:text-brand-primary" data-auth-allow hidden>Graph</a>
+                    <a id="adminSalesLink" href="sells.html" class="auth-hidden relative whitespace-nowrap text-[13px] tracking-wide text-brand-ink/90 transition-colors duration-300 hover:text-brand-primary" data-auth-allow data-i18n="nav.sales" hidden>Sales</a>
+                </div>
+            </div>
+
+            <div class="flex shrink-0 flex-nowrap items-center gap-2" data-auth-allow>
+                <a href="reservation.html" class="group relative hidden overflow-hidden whitespace-nowrap bg-brand-bronze px-5 py-2 text-[11px] font-semibold uppercase tracking-[0.20em] text-white shadow-soft transition-all duration-500 hover:-translate-y-0.5 hover:bg-brand-accent hover:shadow-lift md:inline-flex" data-i18n="nav.reserve">
+                    <span class="relative z-10" data-i18n="nav.reserve">Réserver</span>
+                    <span class="pointer-events-none absolute inset-y-0 left-0 w-1/3 -translate-x-full bg-white/20 blur-md group-hover:animate-shimmer"></span>
+                </a>
+                <div class="dt-nav-actions flex items-center gap-2" data-auth-allow>
+                    <button id="langBtn" type="button" class="ui-pill whitespace-nowrap rounded-full text-[11px] font-semibold uppercase tracking-[0.20em]" data-i18n="nav.language">Language</button>
+                    <button id="themeToggleMain" type="button" onclick="window.dtToggleTheme && window.dtToggleTheme()" class="ui-pill whitespace-nowrap rounded-full text-[11px] font-semibold uppercase tracking-[0.20em]">Dark</button>
+                </div>
+                <button id="cartBtn" type="button" class="auth-hidden relative hidden h-10 w-10 items-center justify-center border border-brand-line/80 bg-white text-brand-bronze shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent md:inline-flex" aria-label="Open cart" hidden>
+                    <svg aria-hidden="true" viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 6h15l-1.5 8.5a2 2 0 0 1-2 1.5H8.3a2 2 0 0 1-2-1.6L4 2H2" />
+                        <path d="M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" />
+                        <path d="M17 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" />
+                    </svg>
+                    <span id="cartBadge" class="absolute -right-2 -top-2 inline-flex min-w-[20px] items-center justify-center rounded-full bg-brand-accent px-1.5 py-0.5 text-[11px] font-semibold text-white">0</span>
+                </button>
+                <button id="ordersBtn" type="button" class="auth-hidden relative hidden h-10 w-10 items-center justify-center border border-brand-line/80 bg-white text-brand-bronze shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent md:inline-flex" aria-label="My orders" hidden>
+                    <svg aria-hidden="true" viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M8 6h13" />
+                        <path d="M8 12h13" />
+                        <path d="M8 18h13" />
+                        <path d="M3 6h.01" />
+                        <path d="M3 12h.01" />
+                        <path d="M3 18h.01" />
+                    </svg>
+                </button>
+                <button
+                    id="mobileMenuBtn"
+                    type="button"
+                    class="inline-flex h-10 w-10 items-center justify-center border border-brand-line/80 bg-white text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent md:hidden"
+                    aria-controls="mobileMenuPanel"
+                    aria-expanded="false"
+                    data-auth-allow
+                >
+                    <span class="sr-only" data-auth-allow data-i18n="common.open_menu">Open menu</span>
+                    <span class="flex flex-col gap-[5px]" data-auth-allow>
+                        <span class="h-[2px] w-5 bg-brand-ink" data-auth-allow></span>
+                        <span class="h-[2px] w-5 bg-brand-ink" data-auth-allow></span>
+                        <span class="h-[2px] w-5 bg-brand-ink" data-auth-allow></span>
+                    </span>
+                </button>
+
+                <div id="authUserBadge" class="auth-hidden hidden flex-nowrap items-center gap-3 md:flex">
+                    <button id="adminMenuBtn" type="button" class="ui-pill rounded-full" data-auth-allow>
+                        <div id="authAvatar" class="ui-avatar" data-auth-allow>DT</div>
+                        <div class="ui-identity hidden md:block" data-auth-allow>
+                            <div id="authUserName" class="ui-name text-sm" data-auth-allow>Utilisateur</div>
+                            <div class="ui-sub" data-auth-allow>Connecté</div>
+                        </div>
+                    </button>
+                    <div id="adminActions" data-auth-allow>
+                        <button id="userProfileBtn" type="button" class="ui-pill ui-pill-primary whitespace-nowrap rounded-full text-xs font-semibold uppercase tracking-[0.22em]" data-auth-allow>
+                            <span data-i18n="common.profile">Profile</span>
+                        </button>
+                        <button id="authLogoutBtn" type="button" class="ui-pill ui-pill-danger whitespace-nowrap rounded-full text-xs font-semibold uppercase tracking-[0.22em]">
+                            <span data-i18n="common.logout">Logout</span>
+                        </button>
+                    </div>
+                </div>
+
+                <button id="authOpenBtn" type="button" class="hidden border border-brand-line/80 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent md:inline-flex">
+                    <span data-i18n="common.login">Login</span>
+                </button>
+            </div>
+        </div>
+
+        <div
+            id="mobileMenuPanel"
+            class="auth-hidden md:hidden"
+            data-auth-allow
+        >
+            <div class="border-t border-brand-line/70 bg-brand-paper/95 backdrop-blur-xl" data-auth-allow>
+                <div class="mx-auto w-full max-w-7xl px-5 py-6" data-auth-allow>
+                    <div class="grid gap-4" data-auth-allow>
+                        <a href="#accueil" class="border border-brand-line/80 bg-white px-5 py-4 text-sm font-semibold text-brand-ink" data-i18n="nav.home">Accueil</a>
+                        <a href="#menu" class="border border-brand-line/80 bg-white px-5 py-4 text-sm font-semibold text-brand-ink" data-i18n="nav.menu">Menu</a>
+                        <a href="#a-propos" class="border border-brand-line/80 bg-white px-5 py-4 text-sm font-semibold text-brand-ink" data-i18n="nav.about">À Propos</a>
+                        <a href="#livraison" class="border border-brand-line/80 bg-white px-5 py-4 text-sm font-semibold text-brand-ink" data-i18n="nav.delivery">Livraison</a>
+                        <a id="mobileStatsLink" href="stat.html" class="auth-hidden border border-brand-line/80 bg-white px-5 py-4 text-sm font-semibold text-brand-ink" data-auth-allow hidden>Stats</a>
+                        <button id="mobileLangBtn" type="button" class="border border-brand-line/80 bg-white px-5 py-4 text-left text-sm font-semibold text-brand-ink" data-i18n="nav.language">Language</button>
+                        <a id="mobileAdminGraphLink" href="graphe.html" class="auth-hidden border border-brand-line/80 bg-white px-5 py-4 text-sm font-semibold text-brand-ink" data-auth-allow hidden>Graph</a>
+                        <a id="mobileAdminSalesLink" href="sells.html" class="auth-hidden border border-brand-line/80 bg-white px-5 py-4 text-sm font-semibold text-brand-ink" data-auth-allow data-i18n="nav.sales" hidden>Sales</a>
+                        <a href="reservation.html" class="group relative overflow-hidden bg-brand-bronze px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-white shadow-soft transition-all duration-500 hover:-translate-y-0.5 hover:bg-brand-accent hover:shadow-lift" >
+                            <span class="relative z-10">Réserver</span>
+                            <span class="pointer-events-none absolute inset-y-0 left-0 w-1/3 -translate-x-full bg-white/20 blur-md group-hover:animate-shimmer"></span>
+                        </a>
+
+                        <div class="mt-2 grid gap-3 border-t border-brand-line/70 pt-4" data-auth-allow>
+                            <button id="mobileCartBtn" type="button" class="auth-hidden border border-brand-line/80 bg-white px-5 py-4 text-sm font-semibold text-brand-ink" data-auth-allow hidden>
+                                <span data-i18n="common.cart">Cart</span>
+                            </button>
+                            <button id="mobileOrdersBtn" type="button" class="auth-hidden border border-brand-line/80 bg-white px-5 py-4 text-sm font-semibold text-brand-ink" data-auth-allow hidden>
+                                <span data-i18n="common.my_orders">My orders</span>
+                            </button>
+                            <button id="mobileProfileBtn" type="button" class="auth-hidden border border-brand-line/80 bg-brand-cream px-5 py-4 text-sm font-semibold text-brand-ink" data-auth-allow hidden>
+                                <span data-i18n="common.profile">Profile</span>
+                            </button>
+                            <button id="mobileLogoutBtn" type="button" class="auth-hidden border border-red-300 bg-red-50 px-5 py-4 text-sm font-semibold text-red-700" data-auth-allow hidden>
+                                <span data-i18n="common.logout">Logout</span>
+                            </button>
+                            <button id="mobileLoginBtn" type="button" class="border border-brand-line/80 bg-white px-5 py-4 text-sm font-semibold text-brand-ink" data-auth-allow>
+                                <span data-i18n="common.login">Login</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section
+        id="accueil"
+        class="relative mt-[84px] flex min-h-[calc(100vh-84px)] items-center justify-center overflow-hidden bg-brand-paper"
+        style="background-image:url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80'); background-size:cover; background-position:center; background-attachment:fixed;"
+    >
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-brand-primary/30 to-brand-bronze/70"></div>
+        <div class="pointer-events-none absolute inset-0 bg-brand-ink/45"></div>
+        <div class="relative z-10 mx-auto w-full max-w-4xl px-5 text-center text-white md:px-10">
+            <div class="inline-flex animate-heroIn items-center gap-3">
+                <span class="inline-flex items-center border border-white/20 bg-white/10 px-5 py-2 text-[11px] font-semibold uppercase tracking-[0.28em] backdrop-blur">
+                    <span data-i18n="home.since">Depuis 2010</span>
+                </span>
+                <span class="hidden h-px w-20 bg-white/30 md:block"></span>
+            </div>
+            <h1 class="mt-10 font-display text-5xl font-bold leading-[1.05] tracking-tight md:text-7xl" style="text-shadow: 0 30px 80px rgba(0,0,0,0.35);">
+                <span class="block animate-heroIn [animation-delay:80ms]" data-i18n="home.hero_line1">Une Expérience</span>
+                <span class="block animate-heroIn [animation-delay:160ms]" data-i18n="home.hero_line2">Culinaire</span>
+                <span class="mt-2 block animate-heroIn [animation-delay:240ms]">
+                    <span class="bg-gradient-to-r from-brand-gold via-brand-accent to-white bg-clip-text text-transparent" data-i18n="home.hero_line3">Exceptionnelle</span>
+                </span>
+            </h1>
+            <p class="mx-auto mt-7 max-w-2xl animate-heroIn text-base text-white/85 [animation-delay:320ms] md:text-lg">
+                <span data-i18n="home.hero_sub">Où l'art de la gastronomie rencontre l'excellence</span>
+            </p>
+            <div class="mt-10 flex flex-col items-center justify-center gap-4 animate-heroIn [animation-delay:420ms] sm:flex-row">
+                <a href="#menu" class="group relative inline-flex items-center justify-center overflow-hidden bg-white px-7 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-bronze shadow-soft transition-all duration-500 hover:-translate-y-0.5 hover:shadow-lift">
+                    <span class="relative z-10" data-i18n="home.discover_menu">Découvrir le Menu</span>
+                    <span class="pointer-events-none absolute inset-y-0 left-0 w-1/3 -translate-x-full bg-brand-accent/30 blur-md group-hover:animate-shimmer"></span>
+                </a>
+                <a href="reservation.html" class="inline-flex items-center justify-center border border-white/35 bg-white/10 px-7 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-white backdrop-blur transition-all duration-500 hover:-translate-y-0.5 hover:bg-white/15">
+                    <span data-i18n="home.reserve_table">Réserver une Table</span>
+                </a>
+            </div>
+            <div class="mt-14 flex items-center justify-center">
+                <a href="#a-propos" class="group inline-flex flex-col items-center gap-3 text-xs uppercase tracking-[0.28em] text-white/70">
+                    <span data-i18n="home.scroll">Scroll</span>
+                    <span class="relative h-10 w-px overflow-hidden bg-white/20">
+                        <span class="absolute left-0 top-0 h-1/2 w-px bg-white/70 animate-floaty"></span>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="a-propos" class="bg-brand-paper py-20 md:py-28">
+        <div class="mx-auto w-full max-w-7xl px-5 md:px-10">
+            <div data-reveal class="transition-all duration-700 ease-out">
+                <div class="flex items-end justify-between gap-6">
+                    <div>
+                        <div class="flex items-center gap-5">
+                            <span class="text-xs font-semibold tracking-[0.32em] text-brand-primary">01</span>
+                            <span class="h-px w-20 bg-brand-line/80"></span>
+                        </div>
+                        <h2 class="mt-5 font-display text-4xl font-bold tracking-tight text-brand-ink md:text-5xl" data-i18n="about.title">À Propos de Nous</h2>
+                        <p class="mt-4 max-w-2xl text-sm leading-relaxed text-brand-muted md:text-base" data-i18n="about.subtitle">Une passion pour la gastronomie depuis plus d'une décennie</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-14 grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
+                <div data-reveal class="transition-all duration-700 ease-out [transition-delay:80ms]">
+                    <div class="inline-flex border border-brand-line/80 bg-brand-cream px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.26em] text-brand-bronze">
+                        <span data-i18n="about.story_tag">Notre Histoire</span>
+                    </div>
+                    <h3 class="mt-6 font-display text-3xl font-bold tracking-tight text-brand-ink md:text-4xl" data-i18n="about.story_title">L'Excellence Culinaire Depuis 2010</h3>
+                    <p class="mt-6 text-sm leading-relaxed text-brand-muted md:text-base">
+                        <span data-i18n="about.p1">Depuis 2010, Dar lbenna propose une cuisine raffinée qui allie tradition et innovation. Notre chef étoilé crée des plats exceptionnels en utilisant uniquement les meilleurs ingrédients locaux et de saison, sélectionnés avec soin auprès de producteurs d'exception.</span>
+                    </p>
+                    <p class="mt-4 text-sm leading-relaxed text-brand-muted md:text-base">
+                        <span data-i18n="about.p2">Nous croyons que chaque repas devrait être une expérience mémorable, et c'est pourquoi nous accordons une attention particulière à chaque détail, de la sélection des ingrédients à la présentation artistique de nos plats. Chaque assiette raconte une histoire, chaque saveur éveille une émotion.</span>
+                    </p>
+                    <div class="mt-10 grid grid-cols-3 gap-4">
+                        <div class="border border-brand-line/80 bg-white px-4 py-5 shadow-soft">
+                            <div class="font-display text-3xl font-bold text-brand-bronze">14+</div>
+                            <div class="mt-2 text-xs uppercase tracking-[0.22em] text-brand-muted" data-i18n="about.years">Années d'Excellence</div>
+                        </div>
+                        <div class="border border-brand-line/80 bg-white px-4 py-5 shadow-soft">
+                            <div class="font-display text-3xl font-bold text-brand-bronze">2</div>
+                            <div class="mt-2 text-xs uppercase tracking-[0.22em] text-brand-muted" data-i18n="about.stars">Étoiles Michelin</div>
+                        </div>
+                        <div class="border border-brand-line/80 bg-white px-4 py-5 shadow-soft">
+                            <div class="font-display text-3xl font-bold text-brand-bronze">50K+</div>
+                            <div class="mt-2 text-xs uppercase tracking-[0.22em] text-brand-muted" data-i18n="about.clients">Clients Satisfaits</div>
+                        </div>
+                    </div>
+                </div>
+                <div data-reveal class="transition-all duration-700 ease-out [transition-delay:140ms]">
+                    <div class="group relative overflow-hidden border border-brand-line/80 bg-white shadow-soft">
+                        <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Restaurant élégant" class="h-[480px] w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]">
+                        <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-ink/30 to-transparent opacity-0 transition-opacity duration-700 group-hover:opacity-100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="adminModal" class="auth-hidden fixed inset-0 z-[110]" aria-hidden="true" data-auth-allow>
+        <div id="adminModalOverlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-auth-allow></div>
+        <div class="relative mx-auto flex min-h-full max-w-6xl items-start justify-center px-5 py-10" data-auth-allow>
+            <div id="adminModalPanel" class="auth-panel-enter w-full max-h-[calc(100vh-3rem)] overflow-y-auto border border-white/10 bg-brand-paper shadow-lift" data-auth-allow>
+                <div class="flex items-center justify-between border-b border-brand-line/80 px-7 py-6" data-auth-allow>
+                    <div data-auth-allow>
+                        <div class="text-xs font-semibold uppercase tracking-[0.32em] text-brand-primary" data-auth-allow>Admin</div>
+                        <h2 class="mt-2 font-display text-2xl font-bold tracking-tight text-brand-ink" data-auth-allow>Dashboard</h2>
+                    </div>
+                    <button id="adminModalClose" type="button" class="h-10 w-10 border border-brand-line/80 bg-white text-sm font-semibold text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" data-auth-allow>
+                        ✕
+                    </button>
+                </div>
+
+                <div class="p-6 md:p-8" data-auth-allow>
+                    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between" data-auth-allow>
+                        <div data-auth-allow>
+                            <p class="text-sm text-brand-muted" data-auth-allow>Démo front-end (localStorage). Login: <span class="font-semibold text-brand-ink">admin@gmail.com / admin</span></p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2" data-auth-allow>
+                            <button id="cmsToggleBtn" type="button" class="auth-hidden border border-brand-line/80 bg-white px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" data-auth-allow>
+                                Edit mode: off
+                            </button>
+                            <button id="cmsExportBtn" type="button" class="auth-hidden border border-brand-line/80 bg-white px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" data-auth-allow>
+                                Export edits
+                            </button>
+                            <button id="cmsImportBtn" type="button" class="auth-hidden border border-brand-line/80 bg-white px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" data-auth-allow>
+                                Import edits
+                            </button>
+                            <button id="cmsResetBtn" type="button" class="auth-hidden border border-red-300 bg-red-50 px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-red-700 transition-all duration-300 hover:-translate-y-0.5" data-auth-allow>
+                                Reset edits
+                            </button>
+                            <button id="adminLogoutBtn" type="button" class="auth-hidden border border-brand-line/80 bg-brand-cream px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" data-auth-allow>
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+
+                    <input id="cmsImportFile" class="auth-hidden" type="file" accept="application/json" data-auth-allow>
+
+                    <div id="adminMsg" class="auth-hidden mt-6 border border-brand-line/80 bg-brand-cream px-4 py-3 text-sm text-brand-ink" data-auth-allow></div>
+
+                    <div id="adminLoginPanel" class="mt-8 grid gap-8 lg:grid-cols-2" data-auth-allow>
+                        <div class="border border-brand-line/80 bg-brand-paper p-6" data-auth-allow>
+                            <h3 class="font-display text-2xl font-bold text-brand-ink" data-auth-allow>Admin login</h3>
+                            <form id="adminLoginForm" class="mt-6 space-y-4" data-auth-allow>
+                                <div data-auth-allow>
+                                    <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Email</label>
+                                    <input id="adminUsername" class="mt-2 w-full border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink outline-none focus:border-brand-accent" type="email" required data-auth-allow>
+                                </div>
+                                <div data-auth-allow>
+                                    <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Password</label>
+                                    <input id="adminPassword" class="mt-2 w-full border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink outline-none focus:border-brand-accent" type="password" required data-auth-allow>
+                                </div>
+                                <button type="submit" class="group relative w-full overflow-hidden bg-brand-bronze px-7 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-white shadow-soft transition-all duration-500 hover:-translate-y-0.5 hover:bg-brand-accent hover:shadow-lift" data-auth-allow>
+                                    <span class="relative z-10" data-auth-allow>Login</span>
+                                    <span class="pointer-events-none absolute inset-y-0 left-0 w-1/3 -translate-x-full bg-white/20 blur-md group-hover:animate-shimmer" data-auth-allow></span>
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="border border-brand-line/80 bg-white p-6" data-auth-allow>
+                            <h3 class="font-display text-2xl font-bold text-brand-ink" data-auth-allow>Change admin password</h3>
+                            <form id="adminChangePwForm" class="mt-6 space-y-4" data-auth-allow>
+                                <div data-auth-allow>
+                                    <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Current password</label>
+                                    <input id="adminPwCurrent" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm text-brand-ink outline-none focus:border-brand-accent" type="password" required data-auth-allow>
+                                </div>
+                                <div data-auth-allow>
+                                    <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>New password</label>
+                                    <input id="adminPwNew" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm text-brand-ink outline-none focus:border-brand-accent" type="password" required data-auth-allow>
+                                </div>
+                                <button type="submit" class="border border-brand-line/80 bg-white px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" data-auth-allow>
+                                    Update password
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div id="adminAppPanel" class="auth-hidden mt-10" data-auth-allow>
+                        <div class="grid grid-cols-3 gap-2" data-auth-allow>
+                            <button id="adminTabUsers" type="button" class="border border-brand-line/80 bg-white px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink" data-auth-allow>Users</button>
+                            <button id="adminTabProducts" type="button" class="border border-brand-line/80 bg-brand-paper px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Products</button>
+                        </div>
+
+                        <div id="adminUsersPanel" class="mt-8" data-auth-allow>
+                            <div class="grid gap-8 lg:grid-cols-2" data-auth-allow>
+                                <div class="border border-brand-line/80 bg-brand-paper p-6" data-auth-allow>
+                                    <h3 class="font-display text-2xl font-bold text-brand-ink" data-auth-allow>Add user</h3>
+                                    <form id="adminAddUserForm" class="mt-6 space-y-4" data-auth-allow>
+                                        <div data-auth-allow>
+                                            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Email</label>
+                                            <input id="adminUserEmail" class="mt-2 w-full border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink outline-none focus:border-brand-accent" type="email" required data-auth-allow>
+                                        </div>
+                                        <div data-auth-allow>
+                                            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Password</label>
+                                            <input id="adminUserPassword" class="mt-2 w-full border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink outline-none focus:border-brand-accent" type="password" required data-auth-allow>
+                                        </div>
+                                        <div data-auth-allow>
+                                            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Role</label>
+                                            <select id="adminUserRole" class="mt-2 w-full border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink outline-none focus:border-brand-accent" data-auth-allow>
+                                                <option value="user">user</option>
+                                                <option value="admin">admin</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="border border-brand-line/80 bg-white px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" data-auth-allow>
+                                            Add
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <div class="border border-brand-line/80 bg-white p-6" data-auth-allow>
+                                    <div class="flex items-end justify-between gap-4" data-auth-allow>
+                                        <h3 class="font-display text-2xl font-bold text-brand-ink" data-auth-allow>Users</h3>
+                                        <span id="adminUsersCount" class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>0</span>
+                                    </div>
+                                    <div id="adminUsersList" class="mt-6 space-y-3" data-auth-allow></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="adminProductsPanel" class="auth-hidden mt-8" data-auth-allow>
+                            <div class="mb-4 flex flex-wrap items-center justify-between gap-2" data-auth-allow>
+                                <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Product storage</div>
+                                <div class="flex flex-wrap items-center gap-2" data-auth-allow>
+                                    <button id="productsExportBtn" type="button" class="border border-brand-line/80 bg-white px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" data-auth-allow>
+                                        Export products
+                                    </button>
+                                    <button id="productsImportBtn" type="button" class="border border-brand-line/80 bg-white px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" data-auth-allow>
+                                        Import products
+                                    </button>
+                                    <button id="productsResetBtn" type="button" class="border border-red-300 bg-red-50 px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-red-700 transition-all duration-300 hover:-translate-y-0.5" data-auth-allow>
+                                        Reset products
+                                    </button>
+                                </div>
+                            </div>
+
+                            <input id="productsImportFile" class="auth-hidden" type="file" accept="application/json" data-auth-allow>
+
+                            <div class="grid gap-8 lg:grid-cols-2" data-auth-allow>
+                                <div class="border border-brand-line/80 bg-brand-paper p-6" data-auth-allow>
+                                    <h3 id="adminProductFormTitle" class="font-display text-2xl font-bold text-brand-ink" data-auth-allow>Add product</h3>
+                                    <form id="adminAddProductForm" class="mt-6 space-y-4" data-auth-allow>
+                                        <div data-auth-allow>
+                                            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Name</label>
+                                            <input id="adminProductName" class="mt-2 w-full border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink outline-none focus:border-brand-accent" type="text" required data-auth-allow>
+                                        </div>
+                                        <div data-auth-allow>
+                                            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Category</label>
+                                            <select id="adminProductCategory" class="mt-2 w-full border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink outline-none focus:border-brand-accent" required data-auth-allow>
+                                                <option value="entree">Entrées</option>
+                                                <option value="plat">Plats Principaux</option>
+                                                <option value="dessert">Desserts</option>
+                                            </select>
+                                        </div>
+                                        <div data-auth-allow>
+                                            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Price</label>
+                                            <input id="adminProductPrice" class="mt-2 w-full border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink outline-none focus:border-brand-accent" type="number" step="0.01" min="0" required data-auth-allow>
+                                        </div>
+                                        <div data-auth-allow>
+                                            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Image URL</label>
+                                            <input id="adminProductImage" class="mt-2 w-full border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink outline-none focus:border-brand-accent" type="url" placeholder="https://..." data-auth-allow>
+                                        </div>
+                                        <div data-auth-allow>
+                                            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Or upload image</label>
+                                            <input id="adminProductImageFile" class="mt-2 w-full border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink outline-none focus:border-brand-accent" type="file" accept="image/*" data-auth-allow>
+                                        </div>
+                                        <div data-auth-allow>
+                                            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Description</label>
+                                            <textarea id="adminProductDesc" class="mt-2 w-full border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink outline-none focus:border-brand-accent" rows="3" placeholder="Write a short description..." data-auth-allow></textarea>
+                                        </div>
+                                        <div class="flex flex-wrap items-center gap-3" data-auth-allow>
+                                            <button id="adminProductSubmitBtn" type="submit" class="border border-brand-line/80 bg-white px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" data-auth-allow>
+                                                Add
+                                            </button>
+                                            <button id="adminProductCancelEditBtn" type="button" class="auth-hidden border border-brand-line/80 bg-brand-cream px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" data-auth-allow>
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="border border-brand-line/80 bg-white p-6" data-auth-allow>
+                                    <div class="flex items-end justify-between gap-4" data-auth-allow>
+                                        <h3 class="font-display text-2xl font-bold text-brand-ink" data-auth-allow>Products</h3>
+                                        <span id="adminProductsCount" class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>0</span>
+                                    </div>
+                                    <div id="adminProductsList" class="mt-6 space-y-3" data-auth-allow></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="profileModal" class="auth-hidden fixed inset-0 z-[108]" aria-hidden="true">
+        <div id="profileOverlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div class="relative mx-auto flex min-h-full max-w-2xl items-start justify-center px-5 py-10">
+            <div id="profilePanel" class="auth-panel-enter w-full border border-white/10 bg-brand-paper shadow-lift max-h-[calc(100vh-3rem)] overflow-y-auto">
+                <div class="flex items-center justify-between border-b border-brand-line/80 px-7 py-6">
+                    <div>
+                        <div class="text-xs font-semibold uppercase tracking-[0.32em] text-brand-primary">Compte</div>
+                        <h2 class="mt-2 font-display text-2xl font-bold tracking-tight text-brand-ink">Profile</h2>
+                    </div>
+                    <button id="profileClose" type="button" class="h-10 w-10 border border-brand-line/80 bg-white text-sm font-semibold text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">✕</button>
+                </div>
+
+                <div class="p-7 md:p-8">
+                    <div id="profileMsg" class="auth-hidden mb-5 border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink"></div>
+                    <form id="profileForm" class="space-y-6">
+                        <div class="grid gap-6 md:grid-cols-2">
+                            <div>
+                                <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Profile picture</div>
+                                <div class="mt-3 flex items-center gap-4">
+                                    <div id="profileAvatarPreview" class="h-14 w-14 overflow-hidden rounded-full border border-brand-line/80 bg-white"></div>
+                                    <div class="grid gap-2">
+                                        <input id="profileAvatarFile" type="file" accept="image/*" class="w-full border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink outline-none focus:border-brand-accent" />
+                                        <button id="profileAvatarClear" type="button" class="border border-brand-line/80 bg-brand-cream px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">Remove photo</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Name</label>
+                                <input id="profileName" class="mt-2 w-full border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink outline-none transition-all duration-300 focus:border-brand-accent" type="text" placeholder="Your name" required>
+                                <div class="mt-4">
+                                    <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Email</label>
+                                    <input id="profileEmailInput" class="mt-2 w-full border border-brand-line/80 bg-brand-cream px-4 py-3 text-sm text-brand-muted outline-none" type="email" disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border border-brand-line/80 bg-white p-5 shadow-soft">
+                            <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Change password</div>
+                            <div class="mt-4 grid gap-4 md:grid-cols-2">
+                                <div>
+                                    <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Current</label>
+                                    <input id="profilePwCurrent" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm text-brand-ink outline-none focus:border-brand-accent" type="password" placeholder="••••••••">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">New</label>
+                                    <input id="profilePwNew" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm text-brand-ink outline-none focus:border-brand-accent" type="password" placeholder="••••••••">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid gap-3 md:grid-cols-2">
+                            <button type="submit" class="border border-brand-line/80 bg-brand-bronze px-5 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-white shadow-soft transition-all duration-500 hover:-translate-y-0.5 hover:bg-brand-accent hover:shadow-lift">Save</button>
+                            <button id="deleteAccountBtn" type="button" class="border border-red-300 bg-red-50 px-5 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-red-700 transition-all duration-300 hover:-translate-y-0.5">Delete account</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu Section -->
+    <section id="menu" class="relative overflow-hidden bg-brand-cream py-20 md:py-28">
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/40 to-transparent"></div>
+        <div class="relative mx-auto w-full max-w-7xl px-5 md:px-10">
+            <div data-reveal class="transition-all duration-700 ease-out">
+                <div class="flex items-center gap-5">
+                    <span class="text-xs font-semibold tracking-[0.32em] text-brand-primary">02</span>
+                    <span class="h-px w-20 bg-brand-line/80"></span>
+                </div>
+                <h2 class="mt-5 font-display text-4xl font-bold tracking-tight text-brand-ink md:text-5xl" data-i18n="menu.title">Notre Menu</h2>
+                <p class="mt-4 max-w-2xl text-sm leading-relaxed text-brand-muted md:text-base" data-i18n="menu.subtitle">Une symphonie de saveurs raffinées</p>
+            </div>
+
+            <div class="mt-10 border border-brand-line/80 bg-white p-5 shadow-soft" data-reveal>
+                <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-i18n="menu.search_title">Search menu</div>
+                        <div class="mt-1 text-sm text-brand-ink" data-i18n="menu.search_help">Find dishes fast (name / description)</div>
+                    </div>
+                    <div class="flex w-full md:max-w-xl">
+                        <div class="flex w-full overflow-hidden rounded-2xl border border-brand-line/80 bg-white shadow-soft focus-within:border-brand-accent focus-within:ring-2 focus-within:ring-brand-accent/15">
+                            <div class="relative w-full">
+                                <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-brand-muted">
+                                    <svg aria-hidden="true" viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 21l-4.3-4.3" />
+                                        <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" />
+                                    </svg>
+                                </span>
+                                <input id="menuSearch" class="h-12 w-full bg-brand-paper/70 py-3 pl-11 pr-4 text-sm text-brand-ink outline-none transition-all duration-300" type="text" placeholder="Search... (ex: chocolat, canard, truffe)" data-i18n="menu.search_placeholder" data-i18n-attr="placeholder" />
+                            </div>
+                            <div class="h-12 w-px bg-brand-line/80"></div>
+                            <div class="relative">
+                                <label class="sr-only" for="menuFilter" data-i18n="menu.filter.label">Filter</label>
+                                <select id="menuFilter" class="h-12 bg-white px-4 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink outline-none transition-all duration-300">
+                                    <option value="all" data-i18n="menu.filter.all">All</option>
+                                    <option value="entrees" data-i18n="menu.filter.entrees">Apéritifs</option>
+                                    <option value="mains" data-i18n="menu.filter.mains">Plats principaux</option>
+                                    <option value="desserts" data-i18n="menu.filter.desserts">Desserts</option>
+                                </select>
+                            </div>
+                            <div class="h-12 w-px bg-brand-line/80"></div>
+                            <button id="menuSearchClear" type="button" class="flex h-12 items-center justify-center bg-brand-ink px-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-ink/90 active:translate-y-0" data-i18n="menu.clear">Clear</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-10 space-y-12">
+                <div data-reveal class="transition-all duration-700 ease-out">
+                    <div class="flex items-center gap-6">
+                        <h3 class="font-display text-2xl font-bold text-brand-ink" data-i18n="menu.entrees">Entrées</h3>
+                        <div class="h-px flex-1 bg-brand-line/80"></div>
+                    </div>
+                    <div class="mt-7 grid gap-6 lg:grid-cols-3" id="entreesGrid">
+                        <div data-menu-card="1" class="group overflow-hidden border border-brand-line/80 bg-white shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lift">
+                            <div class="overflow-hidden">
+                                <img src="../images/viande-grillee-a-la-sauce-teriyaki-dans-une-feuille-de-laitue-avec-salade-de-chou-rouge-et-citron.jpg" alt="Bœuf teriyaki en feuille de laitue" class="h-56 w-full object-fill transition-transform duration-700 group-hover:scale-[1.05]">
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-start justify-between gap-4">
+                                    <h4 class="font-display text-xl font-bold text-brand-ink" data-i18n="menu.item.entree1.title">Bœuf teriyaki en feuille de laitue</h4>
+                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">28€</span>
+                                </div>
+                                <p class="mt-3 text-sm leading-relaxed text-brand-muted" data-i18n="menu.item.entree1.desc">Viande grillée tendre nappée de sauce teriyaki, servie dans une feuille de laitue croquante, accompagnée d’une salade fraîche de chou rouge relevée d’une touche de citron pour un équilibre parfait entre douceur, fraîcheur et acidité.</p>
+                            </div>
+                        </div>
+                        <div data-menu-card="1" class="group overflow-hidden border border-brand-line/80 bg-white shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lift">
+                            <div class="overflow-hidden">
+                                <img src="../images/kanape-a-melange-salade-vue-cote.jpg" alt="Canapé de salade fraîche" class="h-56 w-full object-fill transition-transform duration-700 group-hover:scale-[1.05]">
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-start justify-between gap-4">
+                                    <h4 class="font-display text-xl font-bold text-brand-ink" data-i18n="menu.item.entree2.title">Canapé de salade fraîche</h4>
+                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">32€</span>
+                                </div>
+                                <p class="mt-3 text-sm leading-relaxed text-brand-muted" data-i18n="menu.item.entree2.desc">Canapé léger garni d’un mélange de salades croquantes, présenté en vue de côté pour mettre en valeur les textures et la fraîcheur des ingrédients. Idéal en entrée ou en apéritif.</p>
+                            </div>
+                        </div>
+                        <div data-menu-card="1" class="group overflow-hidden border border-brand-line/80 bg-white shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lift">
+                            <div class="overflow-hidden">
+                                <img src="../images/viande-frite-servie-avec-tomate-sauce-et-fromage-fume.jpg" alt="Viande frite au fromage fumé" class="h-56 w-full object-fill transition-transform duration-700 group-hover:scale-[1.05]">
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-start justify-between gap-4">
+                                    <h4 class="font-display text-xl font-bold text-brand-ink" data-i18n="menu.item.entree3.title">Viande frite au fromage fumé</h4>
+                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">18€</span>
+                                </div>
+                                <p class="mt-3 text-sm leading-relaxed text-brand-muted" data-i18n="menu.item.entree3.desc">Morceaux de viande croustillants servis avec des frites dorées, nappés d’une sauce tomate savoureuse et sublimés par un fromage fumé fondant pour un plat riche et gourmand.</p>
+                            </div>
+                        </div>
+                        <div id="dynamicEntrees" class="contents"></div>
+                    </div>
+                </div>
+
+                <div data-reveal class="transition-all duration-700 ease-out [transition-delay:80ms]">
+                    <div class="flex items-center gap-6">
+                        <h3 class="font-display text-2xl font-bold text-brand-ink" data-i18n="menu.mains">Plats Principaux</h3>
+                        <div class="h-px flex-1 bg-brand-line/80"></div>
+                    </div>
+                    <div class="mt-7 grid gap-6 lg:grid-cols-3" id="platsGrid">
+                        <div data-menu-card="1" class="group overflow-hidden border border-brand-line/80 bg-white shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lift">
+                            <div class="overflow-hidden">
+                                <img src="../images/nsplsh_5565596b71516834506f49~mv2_d_5000_3338_s_4_2.avif" alt="BBQ Marinated Ribs Pork (2 RACK)" class="h-56 w-full object-fill transition-transform duration-700 group-hover:scale-[1.05]">
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-start justify-between gap-4">
+                                    <h4 class="font-display text-xl font-bold text-brand-ink" data-i18n="menu.item.main1.title">BBQ Marinated Ribs Pork (2 RACK)</h4>
+                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">65€</span>
+                                </div>
+                                <p class="mt-3 text-sm leading-relaxed text-brand-muted" data-i18n="menu.item.main1.desc">Deux racks de ribs de porc marinés et grillés au barbecue, tendres et juteux, enrobés d’une sauce BBQ fumée et légèrement sucrée pour une explosion de saveurs.</p>
+                            </div>
+                        </div>
+                        <div data-menu-card="1" class="group overflow-hidden border border-brand-line/80 bg-white shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lift">
+                            <div class="overflow-hidden">
+                                <img src="../images/vue-de-dessus-de-la-salade-de-viande-avec-du-poivron-tomate-et-du-mais-sur-une-plaque.jpg" alt="Salade de viande colorée" class="h-56 w-full object-fill transition-transform duration-700 group-hover:scale-[1.05]">
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-start justify-between gap-4">
+                                    <h4 class="font-display text-xl font-bold text-brand-ink" data-i18n="menu.item.main2.title">Salade de viande colorée</h4>
+                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">42€</span>
+                                </div>
+                                <p class="mt-3 text-sm leading-relaxed text-brand-muted" data-i18n="menu.item.main2.desc">Salade savoureuse composée de viande tendre, de poivrons croquants, de tomates fraîches et de maïs sucré, présentée vue de dessus sur une plaque pour mettre en valeur ses couleurs et sa fraîcheur.</p>
+                            </div>
+                        </div>
+                        <div data-menu-card="1" class="group overflow-hidden border border-brand-line/80 bg-white shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lift">
+                            <div class="overflow-hidden">
+                                <img src="../images/canard a l orange.jpg" alt="Canard" class="h-56 w-full object-fill transition-transform duration-700 group-hover:scale-[1.05]">
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-start justify-between gap-4">
+                                    <h4 class="font-display text-xl font-bold text-brand-ink" data-i18n="menu.item.main3.title">Canard à l'Orange</h4>
+                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">38€</span>
+                                </div>
+                                <p class="mt-3 text-sm leading-relaxed text-brand-muted" data-i18n="menu.item.main3.desc">Magret de canard fermier, sauce à l'orange grand-marnier, pommes de terre rôties au thym</p>
+                            </div>
+                        </div>
+                        <div id="dynamicPlats" class="contents"></div>
+                    </div>
+                </div>
+
+                <div data-reveal class="transition-all duration-700 ease-out [transition-delay:140ms]">
+                    <div class="flex items-center gap-6">
+                        <h3 class="font-display text-2xl font-bold text-brand-ink" data-i18n="menu.desserts">Desserts</h3>
+                        <div class="h-px flex-1 bg-brand-line/80"></div>
+                    </div>
+                    <div class="mt-7 grid gap-6 lg:grid-cols-3" id="dessertsGrid">
+                        <div data-menu-card="1" class="group overflow-hidden border border-brand-line/80 bg-white shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lift">
+                            <div class="overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80" alt="Soufflé" class="h-56 w-full object-fill transition-transform duration-700 group-hover:scale-[1.05]">
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-start justify-between gap-4">
+                                    <h4 class="font-display text-xl font-bold text-brand-ink" data-i18n="menu.item.dessert1.title">Soufflé au Chocolat</h4>
+                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">16€</span>
+                                </div>
+                                <p class="mt-3 text-sm leading-relaxed text-brand-muted" data-i18n="menu.item.dessert1.desc">Soufflé chaud au chocolat Valrhona 70%, glace vanille de Madagascar, coulis de fruits rouges</p>
+                            </div>
+                        </div>
+                        <div data-menu-card="1" class="group overflow-hidden border border-brand-line/80 bg-white shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lift">
+                            <div class="overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80" alt="Tarte Tatin" class="h-56 w-full object-fill transition-transform duration-700 group-hover:scale-[1.05]">
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-start justify-between gap-4">
+                                    <h4 class="font-display text-xl font-bold text-brand-ink" data-i18n="menu.item.dessert2.title">Tarte Tatin</h4>
+                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">14€</span>
+                                </div>
+                                <p class="mt-3 text-sm leading-relaxed text-brand-muted" data-i18n="menu.item.dessert2.desc">Tarte tatin aux pommes Golden, crème fraîche de Normandie, caramel beurre salé</p>
+                            </div>
+                        </div>
+                        <div data-menu-card="1" class="group overflow-hidden border border-brand-line/80 bg-white shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lift">
+                            <div class="overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80" alt="Millefeuille" class="h-56 w-full object-fill transition-transform duration-700 group-hover:scale-[1.05]">
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-start justify-between gap-4">
+                                    <h4 class="font-display text-xl font-bold text-brand-ink" data-i18n="menu.item.dessert3.title">Millefeuille</h4>
+                                    <span class="text-sm font-semibold tracking-wide text-brand-bronze">15€</span>
+                                </div>
+                                <p class="mt-3 text-sm leading-relaxed text-brand-muted" data-i18n="menu.item.dessert3.desc">Millefeuille maison, crème pâtissière vanille, glaçage miroir, fruits de saison</p>
+                            </div>
+                        </div>
+                        <div id="dynamicDesserts" class="contents"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Delivery Section -->
+    <section id="livraison" class="relative overflow-hidden bg-brand-paper py-20 md:py-28">
+        <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(212,175,55,0.16),transparent_55%),radial-gradient(circle_at_85%_35%,rgba(27,79,114,0.12),transparent_60%)]"></div>
+        <div class="mx-auto w-full max-w-7xl px-5 md:px-10">
+            <div data-reveal class="transition-all duration-700 ease-out">
+                <div class="flex items-center gap-5">
+                    <span class="text-xs font-semibold tracking-[0.32em] text-brand-primary">03</span>
+                    <span class="h-px w-20 bg-brand-line/80"></span>
+                </div>
+                <h2 class="mt-5 font-display text-4xl font-bold tracking-tight text-brand-ink md:text-5xl" data-i18n="delivery.title">Livraison</h2>
+                <p class="mt-4 max-w-2xl text-sm leading-relaxed text-brand-muted md:text-base" data-i18n="delivery.subtitle">Commandez en ligne et recevez vos plats à domicile</p>
+            </div>
+
+            <div class="mt-14 grid gap-10 lg:grid-cols-2 lg:gap-12">
+                <div data-reveal class="grid gap-5 transition-all duration-700 ease-out">
+                    <div class="grid gap-5 sm:grid-cols-2">
+                        <div class="group relative overflow-hidden border border-brand-line/80 bg-white/75 p-6 shadow-soft backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:shadow-lift">
+                            <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 bg-[radial-gradient(circle_at_30%_20%,rgba(212,175,55,0.16),transparent_55%)]"></div>
+                            <div class="text-2xl">🚚</div>
+                            <h3 class="mt-4 font-display text-xl font-bold text-brand-ink" data-i18n="delivery.fast_title">Livraison Rapide</h3>
+                            <p class="mt-2 text-sm leading-relaxed text-brand-muted" data-i18n="delivery.fast_desc">Livraison en 2h-4h dans un rayon de 400km autour du restaurant</p>
+                        </div>
+                        <div class="group relative overflow-hidden border border-brand-line/80 bg-white/75 p-6 shadow-soft backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:shadow-lift">
+                            <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 bg-[radial-gradient(circle_at_30%_20%,rgba(27,79,114,0.12),transparent_55%)]"></div>
+                            <div class="text-2xl">💰</div>
+                            <h3 class="mt-4 font-display text-xl font-bold text-brand-ink" data-i18n="delivery.fees_title">Frais de Livraison</h3>
+                            <p class="mt-2 text-sm leading-relaxed text-brand-muted" data-i18n="delivery.fees_desc">5€ de frais de livraison. Gratuit à partir de 50€ de commande</p>
+                        </div>
+                        <div class="group relative overflow-hidden border border-brand-line/80 bg-white/75 p-6 shadow-soft backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:shadow-lift">
+                            <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 bg-[radial-gradient(circle_at_30%_20%,rgba(212,175,55,0.14),transparent_55%)]"></div>
+                            <div class="text-2xl">⏰</div>
+                            <h3 class="mt-4 font-display text-xl font-bold text-brand-ink" data-i18n="delivery.hours_title">Horaires</h3>
+                            <p class="mt-2 text-sm leading-relaxed text-brand-muted">Mardi - Samedi: 19h00 - 22h30<br>Dimanche: 12h00 - 14h30</p>
+                        </div>
+                        <div class="group relative overflow-hidden border border-brand-line/80 bg-white/75 p-6 shadow-soft backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:shadow-lift">
+                            <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 bg-[radial-gradient(circle_at_30%_20%,rgba(27,79,114,0.10),transparent_55%)]"></div>
+                            <div class="text-2xl">📍</div>
+                            <h3 class="mt-4 font-display text-xl font-bold text-brand-ink" data-i18n="delivery.zone_title">Zone de Livraison</h3>
+                            <p class="mt-2 text-sm leading-relaxed text-brand-muted" data-i18n="delivery.zone_desc">Maroc</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div data-reveal class="transition-all duration-700 ease-out [transition-delay:120ms]">
+                    <div class="relative overflow-hidden border border-brand-line/80 bg-white/80 p-7 shadow-soft backdrop-blur-md md:p-10">
+                        <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(212,175,55,0.14),transparent_60%),radial-gradient(circle_at_80%_20%,rgba(27,79,114,0.10),transparent_55%)]"></div>
+                        <div>
+                            <h3 class="font-display text-2xl font-bold text-brand-ink" data-i18n="delivery.form_title">Formulaire de Commande</h3>
+                            <p class="mt-2 text-sm text-brand-muted" data-i18n="delivery.form_desc">Remplissez le formulaire pour passer votre commande en livraison</p>
+                        </div>
+                        <div class="relative mt-6 flex flex-col gap-3 border border-brand-line/80 bg-white/70 px-5 py-4 backdrop-blur-md md:flex-row md:items-center md:justify-between">
+                            <div>
+                                <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-i18n="delivery.help_title">Besoin d'aide ?</div>
+                                <div class="mt-1 text-sm font-semibold text-brand-ink" data-i18n="delivery.help_desc">Passez commande via WhatsApp (réponse rapide)</div>
+                            </div>
+                            <button id="deliveryWhatsAppBtn" type="button" class="group relative overflow-hidden border border-brand-line/80 bg-[#25D366]/90 px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-white shadow-soft transition-all duration-500 hover:-translate-y-0.5 hover:bg-[#1fb85a]">
+                                <span class="relative z-10">WhatsApp</span>
+                                <span class="pointer-events-none absolute inset-y-0 left-0 w-1/3 -translate-x-full bg-white/25 blur-md group-hover:animate-shimmer"></span>
+                            </button>
+                        </div>
+                        <form id="deliveryForm" class="mt-8 space-y-5">
+                            <div class="grid gap-5 md:grid-cols-2">
+                                <div>
+                                    <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-i18n="delivery.full_name">Nom complet</label>
+                                    <input id="deliveryName" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm text-brand-ink outline-none transition-all duration-300 focus:border-brand-accent" type="text" placeholder="J9al" required data-i18n="delivery.ph_name" data-i18n-attr="placeholder">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-i18n="delivery.phone">Téléphone</label>
+                                    <input id="deliveryPhone" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm text-brand-ink outline-none transition-all duration-300 focus:border-brand-accent" type="tel" placeholder="+212 6 12 34 56 78" required data-i18n="delivery.ph_phone" data-i18n-attr="placeholder">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-i18n="delivery.address">Adresse de livraison</label>
+                                <input id="deliveryAddress" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm text-brand-ink outline-none transition-all duration-300 focus:border-brand-accent" type="text" placeholder="123 Rue de la République, Casa" required data-i18n="delivery.ph_address" data-i18n-attr="placeholder">
+                            </div>
+                            <div class="grid gap-5 md:grid-cols-2">
+                                <div>
+                                    <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-i18n="delivery.city">Ville</label>
+                                    <input id="deliveryCity" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm text-brand-ink outline-none transition-all duration-300 focus:border-brand-accent" type="text" placeholder="casa" required data-i18n="delivery.ph_city" data-i18n-attr="placeholder">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-i18n="delivery.datetime">Date et heure de livraison souhaitée</label>
+                                <input id="deliveryDatetime" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm text-brand-ink outline-none transition-all duration-300 focus:border-brand-accent" type="datetime-local" required>
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-i18n="delivery.order">Votre commande</label>
+                                <textarea id="deliveryOrder" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm text-brand-ink outline-none transition-all duration-300 focus:border-brand-accent" placeholder="Indiquez les plats que vous souhaitez commander avec les quantités (ex: 2x Foie Gras Maison, 1x Filet de Bœuf Wagyu, 1x Soufflé au Chocolat)" rows="5" required data-i18n="delivery.ph_order" data-i18n-attr="placeholder"></textarea>
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-i18n="delivery.notes">Instructions spéciales</label>
+                                <textarea id="deliveryNotes" class="mt-2 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm text-brand-ink outline-none transition-all duration-300 focus:border-brand-accent" placeholder="Allergies, code d'accès, instructions de livraison..." rows="3" data-i18n="delivery.ph_notes" data-i18n-attr="placeholder"></textarea>
+                            </div>
+                            <button type="submit" class="group relative w-full overflow-hidden bg-brand-bronze px-7 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-white shadow-soft transition-all duration-500 hover:-translate-y-0.5 hover:bg-brand-accent hover:shadow-lift">
+                                <span class="relative z-10" data-i18n="delivery.submit">Commander</span>
+                                <span class="pointer-events-none absolute inset-y-0 left-0 w-1/3 -translate-x-full bg-white/20 blur-md group-hover:animate-shimmer"></span>
+                            </button>
+                        </form>
+
+                        <div id="trackingPanel">
+                            <h3 data-i18n="delivery.track_title">Suivi de votre livraison</h3>
+                            <div class="tracking-header">
+                                <span class="tracking-order-id" id="trackingOrderId">Commande #DT-1024</span>
+                                <span class="tracking-status-pill" id="trackingStatusPill" data-i18n="delivery.track_waiting">En attente de commande</span>
+                            </div>
+                            <p id="trackingStatus">
+                                <span data-i18n="delivery.track_hint">Cliquez sur Commander pour lancer une simulation de livraison et suivre le livreur en direct.</span>
+                            </p>
+                            <div class="tracking-progress">
+                                <div class="tracking-progress-bar" id="trackingProgressBar"></div>
+                            </div>
+                            <div id="map"></div>
+                            <p id="etaDisplay"></p>
+                            <p class="tracking-meta" id="distanceDisplay"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-brand-bronze py-16 text-white">
+        <div class="mx-auto w-full max-w-7xl px-5 md:px-10">
+            <div class="grid gap-10 lg:grid-cols-4">
+                <div>
+                    <div class="inline-flex items-center gap-2 font-display text-xl font-bold tracking-tight">
+                        <span>dar lbenna</span>
+                        <span class="text-sm text-brand-gold">★</span>
+                    </div>
+                    <p class="mt-5 text-sm leading-relaxed text-white/75">Une expérience culinaire d'exception depuis 2010. Où chaque plat raconte une histoire et chaque repas devient un souvenir inoubliable.</p>
+                    <div class="mt-6 flex flex-wrap gap-4 text-xs font-semibold uppercase tracking-[0.22em]">
+                        <a href="#" class="text-white/70 transition-colors duration-300 hover:text-white">Facebook</a>
+                        <a href="https://www.instagram.com/yas__sine_ait/" class="text-white/70 transition-colors duration-300 hover:text-white">Instagram</a>
+                        <a href="#" class="text-white/70 transition-colors duration-300 hover:text-white">Twitter</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-xs font-semibold uppercase tracking-[0.28em] text-white/80" data-i18n="footer.nav">Navigation</h4>
+                    <div class="mt-5 space-y-3 text-sm">
+                        <a href="#accueil" class="block text-white/70 transition-colors duration-300 hover:text-white" data-i18n="nav.home">Accueil</a>
+                        <a href="#menu" class="block text-white/70 transition-colors duration-300 hover:text-white" data-i18n="nav.menu">Menu</a>
+                        <a href="#a-propos" class="block text-white/70 transition-colors duration-300 hover:text-white" data-i18n="nav.about">À Propos</a>
+                        <a href="#livraison" class="block text-white/70 transition-colors duration-300 hover:text-white" data-i18n="nav.delivery">Livraison</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-xs font-semibold uppercase tracking-[0.28em] text-white/80" data-i18n="footer.info">Informations</h4>
+                    <div class="mt-5 space-y-3 text-sm">
+                        <a href="#" class="block text-white/70 transition-colors duration-300 hover:text-white">Politique de Confidentialité</a>
+                        <a href="#" class="block text-white/70 transition-colors duration-300 hover:text-white">Mentions Légales</a>
+                        <a href="#" class="block text-white/70 transition-colors duration-300 hover:text-white">CGV</a>
+                        <a href="#" class="block text-white/70 transition-colors duration-300 hover:text-white">Recrutement</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-xs font-semibold uppercase tracking-[0.28em] text-white/80" data-i18n="footer.newsletter">Newsletter</h4>
+                    <p class="mt-5 text-sm leading-relaxed text-white/75">Recevez nos dernières actualités et offres spéciales</p>
+                    <form class="mt-6 flex gap-3">
+                        <input class="w-full border border-white/15 bg-white/5 px-4 py-3 text-sm text-white outline-none transition-all duration-300 placeholder:text-white/35 focus:border-brand-gold" type="email" placeholder="Votre email" required>
+                        <button type="submit" class="group relative overflow-hidden bg-brand-gold px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-500 hover:-translate-y-0.5">
+                            <span class="relative z-10">S'abonner</span>
+                            <span class="pointer-events-none absolute inset-y-0 left-0 w-1/3 -translate-x-full bg-white/25 blur-md group-hover:animate-shimmer"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="mt-12 flex flex-col gap-3 border-t border-white/10 pt-8 text-sm text-white/60 md:flex-row md:items-center md:justify-between">
+                <p>&copy; 2025 dar lbenna. Tous droits réservés.</p>
+                <p>Conçu avec passion pour l'excellence culinaire</p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="productModal" class="auth-hidden fixed inset-0 z-[105]" aria-hidden="true">
+        <div id="productModalOverlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div class="relative mx-auto flex min-h-full max-w-3xl items-start justify-center px-5 py-10">
+            <div id="productModalPanel" class="auth-panel-enter w-full overflow-hidden border border-white/10 bg-brand-paper shadow-lift">
+                <div class="flex items-center justify-between border-b border-brand-line/80 px-7 py-6">
+                    <div>
+                        <div class="text-xs font-semibold uppercase tracking-[0.32em] text-brand-primary">Personnaliser</div>
+                        <h2 id="productModalTitle" class="mt-2 font-display text-2xl font-bold tracking-tight text-brand-ink">Produit</h2>
+                    </div>
+                    <button id="productModalClose" type="button" class="h-10 w-10 border border-brand-line/80 bg-white text-sm font-semibold text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">✕</button>
+                </div>
+
+                <div class="grid gap-8 p-7 md:grid-cols-2 md:p-8">
+                    <div class="overflow-hidden border border-brand-line/80 bg-white shadow-soft">
+                        <img id="productModalImg" src="" alt="" class="h-64 w-full object-cover" />
+                        <div class="border-t border-brand-line/80 px-5 py-4">
+                            <div class="flex items-start justify-between gap-4">
+                                <div class="min-w-0">
+                                    <div id="productModalName" class="truncate font-display text-lg font-bold text-brand-ink"></div>
+                                    <div id="productModalDesc" class="mt-2 text-sm leading-relaxed text-brand-muted"></div>
+                                </div>
+                                <div id="productModalPrice" class="shrink-0 text-sm font-semibold tracking-wide text-brand-bronze">0€</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="border border-brand-line/80 bg-white p-5 shadow-soft">
+                            <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Instructions</div>
+                            <textarea id="productModalNotes" rows="5" maxlength="240" class="mt-3 w-full border border-brand-line/80 bg-brand-paper px-4 py-3 text-sm text-brand-ink outline-none focus:border-brand-accent" placeholder="Ex: +1g sel, sans huile, enlever steak, ajouter steak, sauce à part..."></textarea>
+                            <div class="mt-2 flex items-center justify-between gap-3">
+                                <div id="productModalNotesHint" class="text-xs text-brand-muted">0/240</div>
+                                <button id="productModalClearNotes" type="button" class="border border-brand-line/80 bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">Clear</button>
+                            </div>
+                        </div>
+
+                        <div class="mt-5 flex flex-wrap items-center justify-between gap-3 border border-brand-line/80 bg-brand-cream px-5 py-4">
+                            <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Quantité</div>
+                            <div class="flex items-center gap-2">
+                                <button id="productModalQtyMinus" type="button" class="h-10 w-10 border border-brand-line/80 bg-white text-sm font-semibold text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">-</button>
+                                <div id="productModalQty" class="min-w-[44px] text-center text-sm font-semibold text-brand-ink">1</div>
+                                <button id="productModalQtyPlus" type="button" class="h-10 w-10 border border-brand-line/80 bg-white text-sm font-semibold text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">+</button>
+                            </div>
+                        </div>
+
+                        <button id="productModalAdd" type="button" class="mt-5 w-full border border-brand-line/80 bg-brand-bronze px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-white shadow-soft transition-all duration-500 hover:-translate-y-0.5 hover:bg-brand-accent hover:shadow-lift">Ajouter à la commande</button>
+                        <p class="mt-3 text-xs leading-relaxed text-brand-muted">Les détails seront visibles dans votre panier.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cartPanel" class="auth-hidden fixed inset-0 z-[106]" aria-hidden="true">
+        <div id="cartOverlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div class="absolute right-0 top-0 flex h-full w-full max-w-lg flex-col border-l border-white/10 bg-brand-paper shadow-lift">
+            <div class="flex items-center justify-between border-b border-brand-line/80 px-7 py-6">
+                <div>
+                    <div class="text-xs font-semibold uppercase tracking-[0.32em] text-brand-primary">Commande</div>
+                    <h2 class="mt-2 font-display text-2xl font-bold tracking-tight text-brand-ink">Votre Panier</h2>
+                </div>
+                <button id="cartClose" type="button" class="h-10 w-10 border border-brand-line/80 bg-white text-sm font-semibold text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">✕</button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto px-7 py-6">
+                <div id="cartList" class="space-y-4"></div>
+                <div id="cartEmpty" class="auth-hidden border border-brand-line/80 bg-white px-5 py-6 text-sm text-brand-muted">Votre panier est vide. Cliquez sur un plat pour le personnaliser.</div>
+            </div>
+
+            <div class="border-t border-brand-line/80 px-7 py-6">
+                <div class="flex items-center justify-between">
+                    <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Total</div>
+                    <div id="cartTotal" class="text-sm font-semibold tracking-wide text-brand-bronze">0€</div>
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-3">
+                    <button id="cartClear" type="button" class="border border-red-300 bg-red-50 px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-red-700 transition-all duration-300 hover:-translate-y-0.5">Vider</button>
+                    <button id="cartCheckout" type="button" class="border border-brand-line/80 bg-brand-bronze px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-white shadow-soft transition-all duration-500 hover:-translate-y-0.5 hover:bg-brand-accent hover:shadow-lift">Valider</button>
+                </div>
+                <button id="cartToDelivery" type="button" class="mt-3 w-full border border-brand-line/80 bg-white px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">Envoyer vers Livraison</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="ordersModal" class="auth-hidden fixed inset-0 z-[107]" aria-hidden="true">
+        <div id="ordersOverlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div class="relative mx-auto flex min-h-full max-w-4xl items-start justify-center px-5 py-10">
+            <div id="ordersPanel" class="auth-panel-enter w-full max-h-[calc(100vh-3rem)] overflow-y-auto border border-white/10 bg-brand-paper shadow-lift">
+                <div class="flex items-center justify-between border-b border-brand-line/80 px-7 py-6">
+                    <div>
+                        <div class="text-xs font-semibold uppercase tracking-[0.32em] text-brand-primary">Compte</div>
+                        <h2 class="mt-2 font-display text-2xl font-bold tracking-tight text-brand-ink">Mes Commandes</h2>
+                    </div>
+                    <button id="ordersClose" type="button" class="h-10 w-10 border border-brand-line/80 bg-white text-sm font-semibold text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">✕</button>
+                </div>
+                <div class="p-7 md:p-8">
+                    <div id="ordersEmpty" class="auth-hidden border border-brand-line/80 bg-white px-5 py-6 text-sm text-brand-muted">Aucune commande pour l'instant. Ajoutez des plats au panier et validez.</div>
+                    <div id="ordersList" class="space-y-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="authModal" class="auth-hidden fixed inset-0 z-[100]" aria-hidden="true" data-auth-allow>
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-auth-allow></div>
+        <div class="relative mx-auto flex min-h-full max-w-xl items-center justify-center px-5 py-10" data-auth-allow>
+            <div id="authPanel" class="auth-panel-enter w-full border border-white/10 bg-brand-paper shadow-lift max-h-[calc(100vh-3rem)] overflow-y-auto" data-auth-allow>
+                <div class="flex items-center justify-between border-b border-brand-line/80 px-7 py-6" data-auth-allow>
+                    <div data-auth-allow>
+                        <div class="text-xs font-semibold uppercase tracking-[0.32em] text-brand-primary" data-auth-allow>dar tiyaba</div>
+                        <h3 class="mt-2 font-display text-2xl font-bold tracking-tight text-brand-ink" data-auth-allow>Login / Register</h3>
+                    </div>
+                    <button id="authCloseBtn" type="button" class="h-10 w-10 border border-brand-line/80 bg-white text-sm font-semibold text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" data-auth-allow>
+                        ✕
+                    </button>
+                </div>
+
+                <div class="px-7 pt-6" data-auth-allow>
+                    <div class="grid grid-cols-2 gap-2" data-auth-allow>
+                        <button id="authTabLogin" type="button" class="border border-brand-line/80 bg-white px-4 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300" data-auth-allow>
+                            Login
+                        </button>
+                        <button id="authTabRegister" type="button" class="border border-brand-line/80 bg-brand-cream px-4 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted transition-all duration-300" data-auth-allow>
+                            Register
+                        </button>
+                    </div>
+                </div>
+
+                <div class="px-7 pb-8 pt-6" data-auth-allow>
+                    <div id="authMsg" class="auth-hidden mb-5 border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink" data-auth-allow></div>
+                    <form id="authLoginForm" class="space-y-5" data-auth-allow>
+                        <div data-auth-allow>
+                            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Email</label>
+                            <input id="authLoginEmail" class="mt-2 w-full border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink outline-none transition-all duration-300 focus:border-brand-accent" type="email" placeholder="you@email.com" required data-auth-allow>
+                        </div>
+                        <div data-auth-allow>
+                            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Password</label>
+                            <input id="authLoginPassword" class="mt-2 w-full border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink outline-none transition-all duration-300 focus:border-brand-accent" type="password" placeholder="••••••••" required data-auth-allow>
+                        </div>
+                        <button type="submit" class="group relative w-full overflow-hidden bg-brand-bronze px-7 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-white shadow-soft transition-all duration-500 hover:-translate-y-0.5 hover:bg-brand-accent hover:shadow-lift" data-auth-allow>
+                            <span class="relative z-10" data-auth-allow>Login</span>
+                            <span class="pointer-events-none absolute inset-y-0 left-0 w-1/3 -translate-x-full bg-white/20 blur-md group-hover:animate-shimmer" data-auth-allow></span>
+                        </button>
+                        <p class="text-xs leading-relaxed text-brand-muted" data-auth-allow>
+                            Démo front-end uniquement: les comptes sont enregistrés dans localStorage.
+                        </p>
+
+                    </form>
+
+                    <form id="authRegisterForm" class="auth-hidden space-y-5" data-auth-allow>
+                        <div data-auth-allow>
+                            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Nom</label>
+                            <input id="authRegisterName" class="mt-2 w-full border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink outline-none transition-all duration-300 focus:border-brand-accent" type="text" placeholder="Votre nom" required data-auth-allow>
+                        </div>
+                        <div data-auth-allow>
+                            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Email</label>
+                            <input id="authRegisterEmail" class="mt-2 w-full border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink outline-none transition-all duration-300 focus:border-brand-accent" type="email" placeholder="you@email.com" required data-auth-allow>
+                        </div>
+                        <div data-auth-allow>
+                            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Password</label>
+                            <input id="authRegisterPassword" class="mt-2 w-full border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink outline-none transition-all duration-300 focus:border-brand-accent" type="password" placeholder="••••••••" required data-auth-allow>
+                        </div>
+                        <div data-auth-allow>
+                            <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted" data-auth-allow>Role</label>
+                            <select id="authRegisterRole" class="mt-2 w-full border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink outline-none transition-all duration-300 focus:border-brand-accent" required disabled data-auth-allow>
+                                <option value="user" selected>user</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="group relative w-full overflow-hidden bg-brand-bronze px-7 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-white shadow-soft transition-all duration-500 hover:-translate-y-0.5 hover:bg-brand-accent hover:shadow-lift" data-auth-allow>
+                            <span class="relative z-10" data-auth-allow>Create account</span>
+                            <span class="pointer-events-none absolute inset-y-0 left-0 w-1/3 -translate-x-full bg-white/20 blur-md group-hover:animate-shimmer" data-auth-allow></span>
+                        </button>
+                        <p class="text-xs leading-relaxed text-brand-muted" data-auth-allow>
+                            Compte stocké dans votre navigateur (localStorage).
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="../javascript/js.js"></script>
+    <script src="../javascript/lang.js"></script>
+</body>
+</html>

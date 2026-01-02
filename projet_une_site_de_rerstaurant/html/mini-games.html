@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dar lbenna - Mini games</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/minigames.css">
+</head>
+<body class="bg-brand-paper text-brand-ink">
+    <nav class="sticky top-0 z-50 w-full border-b border-brand-line/70 bg-brand-paper/80 backdrop-blur-xl">
+        <div class="mx-auto flex w-full max-w-7xl flex-nowrap items-center justify-between gap-4 px-5 py-5 md:px-10">
+            <a href="html.html" class="group inline-flex items-center gap-2 font-display text-xl font-bold tracking-tight text-brand-bronze">
+                <span class="relative">
+                    dar lbenna
+                    <span class="pointer-events-none absolute -bottom-1 left-0 h-px w-0 bg-brand-accent/80 transition-all duration-500 group-hover:w-full"></span>
+                </span>
+                <span class="text-sm text-brand-accent">★</span>
+            </a>
+
+            <div class="flex flex-nowrap items-center gap-3">
+                <a href="html.html#menu" class="hidden whitespace-nowrap text-sm tracking-wide text-brand-ink/90 transition-colors duration-300 hover:text-brand-primary md:inline">Menu</a>
+                <a href="html.html#livraison" class="hidden whitespace-nowrap text-sm tracking-wide text-brand-ink/90 transition-colors duration-300 hover:text-brand-primary md:inline">Livraison</a>
+                <a href="html.html" class="ui-pill rounded-full">
+                    <span class="text-xs font-semibold uppercase tracking-[0.22em]">Back</span>
+                </a>
+
+                <button id="authStubBtn" type="button" class="ui-pill rounded-full">
+                    <span id="authStubAvatar" class="ui-avatar">?</span>
+                    <span class="text-xs font-semibold uppercase tracking-[0.22em]" id="authStubText">Guest</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="resetFx" aria-hidden="true">
+        <div class="fx-dim"></div>
+        <div class="fx-shake">
+            <div class="fx-fire"></div>
+            <div class="fx-flash"></div>
+            <div class="fx-runes"><span>RESET</span></div>
+        </div>
+    </div>
+
+    <main class="mx-auto w-full max-w-7xl px-5 py-10 md:px-10">
+        <div class="flex flex-col gap-3">
+            <div class="text-xs font-semibold uppercase tracking-[0.32em] text-brand-primary">Mini games</div>
+            <h1 class="font-display text-4xl font-bold tracking-tight text-brand-ink">Play</h1>
+            <p class="max-w-2xl text-sm leading-relaxed text-brand-muted">Rock–Paper–Scissors against the robot, Tic‑Tac‑Toe in solo or two-player mode, and Checkers.</p>
+        </div>
+
+        <div class="mt-10 grid gap-8 lg:grid-cols-2">
+            <section class="border border-brand-line/80 bg-white p-7 shadow-soft">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Game 1</div>
+                        <h2 class="mt-2 font-display text-2xl font-bold text-brand-ink">Pierre – Feuille – Ciseaux</h2>
+                    </div>
+                    <button id="rpsReset" type="button" class="border border-brand-line/80 bg-brand-cream px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">Reset</button>
+                </div>
+
+                <div class="mt-6 grid gap-4 md:grid-cols-3">
+                    <button class="rpsPick border border-brand-line/80 bg-white px-4 py-4 text-sm font-semibold text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" data-rps="rock">Pierre</button>
+                    <button class="rpsPick border border-brand-line/80 bg-white px-4 py-4 text-sm font-semibold text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" data-rps="paper">Feuille</button>
+                    <button class="rpsPick border border-brand-line/80 bg-white px-4 py-4 text-sm font-semibold text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" data-rps="scissors">Ciseaux</button>
+                </div>
+
+                <div class="mt-6 grid gap-4 rounded-md border border-brand-line/80 bg-brand-paper px-5 py-4">
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-sm">
+                        <div class="font-semibold">You:</div>
+                        <div id="rpsYou" class="text-brand-muted">—</div>
+                    </div>
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-sm">
+                        <div class="font-semibold">Robot:</div>
+                        <div id="rpsBot" class="text-brand-muted">—</div>
+                    </div>
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-sm">
+                        <div class="font-semibold">Result:</div>
+                        <div id="rpsResult" class="font-semibold text-brand-bronze">—</div>
+                    </div>
+                    <div class="mt-2 border-t border-brand-line/80 pt-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">
+                        Score
+                    </div>
+                    <div class="grid gap-2 text-sm md:grid-cols-3">
+                        <div class="flex items-center justify-between gap-2 border border-brand-line/80 bg-white px-3 py-2"><span>You</span><span id="rpsScoreYou" class="font-semibold">0</span></div>
+                        <div class="flex items-center justify-between gap-2 border border-brand-line/80 bg-white px-3 py-2"><span>Robot</span><span id="rpsScoreBot" class="font-semibold">0</span></div>
+                        <div class="flex items-center justify-between gap-2 border border-brand-line/80 bg-white px-3 py-2"><span>Draw</span><span id="rpsScoreDraw" class="font-semibold">0</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="border border-brand-line/80 bg-white p-7 shadow-soft">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Game 2</div>
+                        <h2 class="mt-2 font-display text-2xl font-bold text-brand-ink">X O</h2>
+                    </div>
+                    <button id="tttReset" type="button" class="border border-brand-line/80 bg-brand-cream px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">Reset</button>
+                </div>
+
+                <div class="mt-6 grid gap-4">
+                    <div class="grid gap-3 md:grid-cols-3">
+                        <button id="tttModeSolo" type="button" class="border border-brand-line/80 bg-white px-4 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">Solo (vs robot)</button>
+                        <button id="tttModeTwo" type="button" class="border border-brand-line/80 bg-white px-4 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">2 players</button>
+                        <div class="border border-brand-line/80 bg-brand-paper px-4 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Turn: <span id="tttTurn" class="text-brand-ink">—</span></div>
+                    </div>
+
+                    <div id="tttTwoPlayerPanel" class="auth-hidden border border-brand-line/80 bg-brand-paper p-5">
+                        <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">2 players (same browser, shared storage)</div>
+                        <div class="mt-3 grid gap-3 md:grid-cols-2">
+                            <div>
+                                <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Opponent</label>
+                                <select id="tttOpponent" class="mt-2 w-full border border-brand-line/80 bg-white px-4 py-3 text-sm text-brand-ink outline-none focus:border-brand-accent"></select>
+                            </div>
+                            <div class="flex items-end">
+                                <button id="tttStartMatch" type="button" class="w-full border border-brand-line/80 bg-white px-4 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">Start / Open match</button>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-sm text-brand-muted">You must be logged in to use 2-player mode.</div>
+                        <div class="mt-2 text-sm">Match: <span id="tttMatchId" class="font-semibold text-brand-ink">—</span></div>
+                        <div class="mt-2 text-sm">You are: <span id="tttYouSymbol" class="font-semibold text-brand-bronze">—</span></div>
+                    </div>
+
+                    <div class="mx-auto grid w-full max-w-sm grid-cols-3 gap-3">
+                        <button class="tttCell flex h-20 items-center justify-center border border-brand-line/80 bg-white text-3xl font-bold text-brand-ink transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-accent" data-ttt="0"></button>
+                        <button class="tttCell flex h-20 items-center justify-center border border-brand-line/80 bg-white text-3xl font-bold text-brand-ink transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-accent" data-ttt="1"></button>
+                        <button class="tttCell flex h-20 items-center justify-center border border-brand-line/80 bg-white text-3xl font-bold text-brand-ink transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-accent" data-ttt="2"></button>
+                        <button class="tttCell flex h-20 items-center justify-center border border-brand-line/80 bg-white text-3xl font-bold text-brand-ink transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-accent" data-ttt="3"></button>
+                        <button class="tttCell flex h-20 items-center justify-center border border-brand-line/80 bg-white text-3xl font-bold text-brand-ink transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-accent" data-ttt="4"></button>
+                        <button class="tttCell flex h-20 items-center justify-center border border-brand-line/80 bg-white text-3xl font-bold text-brand-ink transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-accent" data-ttt="5"></button>
+                        <button class="tttCell flex h-20 items-center justify-center border border-brand-line/80 bg-white text-3xl font-bold text-brand-ink transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-accent" data-ttt="6"></button>
+                        <button class="tttCell flex h-20 items-center justify-center border border-brand-line/80 bg-white text-3xl font-bold text-brand-ink transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-accent" data-ttt="7"></button>
+                        <button class="tttCell flex h-20 items-center justify-center border border-brand-line/80 bg-white text-3xl font-bold text-brand-ink transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-accent" data-ttt="8"></button>
+                    </div>
+
+                    <div class="mt-5 grid gap-2 rounded-md border border-brand-line/80 bg-brand-paper px-5 py-4">
+                        <div class="flex flex-wrap items-center justify-between gap-2 text-sm">
+                            <div class="font-semibold">Status:</div>
+                            <div id="tttStatus" class="font-semibold text-brand-bronze">—</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="border border-brand-line/80 bg-white p-7 shadow-soft">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Checkers</div>
+                        <h2 class="mt-2 font-display text-2xl font-bold text-brand-ink">White vs Black</h2>
+                        <p class="mt-2 max-w-xl text-sm leading-relaxed text-brand-muted">Diagonal moves, forced captures, multi-jumps, kings.</p>
+                    </div>
+                    <a href="checkers.html" class="border border-brand-line/80 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">Play</a>
+                </div>
+
+                <div class="mt-6 rounded-md border border-brand-line/80 bg-brand-paper px-5 py-4 text-sm text-brand-muted">
+                    If a capture is available, you must capture.
+                </div>
+            </section>
+        </div>
+
+        <section class="mt-8 border border-brand-line/80 bg-white p-7 shadow-soft">
+            <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                <div>
+                    <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Game 3</div>
+                    <h2 class="mt-2 font-display text-2xl font-bold text-brand-ink">Snake</h2>
+                    <p class="mt-2 max-w-2xl text-sm leading-relaxed text-brand-muted">Use the buttons (or arrow keys) to move. Each apple fills one cube.</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <label class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Level</label>
+                    <select id="snakeLevel" class="border border-brand-line/80 bg-white px-4 py-2 text-sm text-brand-ink outline-none focus:border-brand-accent">
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                        <option value="extreme">Extreme</option>
+                    </select>
+                    <button id="snakeStart" type="button" class="border border-brand-line/80 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">Start</button>
+                    <button id="snakeReset" type="button" class="border border-brand-line/80 bg-brand-cream px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">Reset</button>
+                </div>
+            </div>
+
+            <div class="mt-6 grid gap-6 lg:grid-cols-[420px_1fr]">
+                <div class="border border-brand-line/80 bg-brand-paper p-4">
+                    <canvas id="snakeCanvas" width="360" height="360" class="mx-auto block border border-brand-line/80 bg-white"></canvas>
+                    <div class="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm">
+                        <div class="border border-brand-line/80 bg-white px-3 py-2">Score: <span id="snakeScore" class="font-semibold text-brand-ink">0</span></div>
+                        <div class="border border-brand-line/80 bg-white px-3 py-2">Status: <span id="snakeStatus" class="font-semibold text-brand-bronze">Ready</span></div>
+                    </div>
+                    <div class="mt-4 border border-brand-line/80 bg-white p-4">
+                        <div class="grid grid-cols-3 gap-2">
+                            <div></div>
+                            <button type="button" class="snakeDir border border-brand-line/80 bg-brand-cream px-3 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" data-snake-dir="up">Up</button>
+                            <div></div>
+                            <button type="button" class="snakeDir border border-brand-line/80 bg-brand-cream px-3 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" data-snake-dir="left">Left</button>
+                            <button type="button" class="snakeDir border border-brand-line/80 bg-brand-cream px-3 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" data-snake-dir="down">Down</button>
+                            <button type="button" class="snakeDir border border-brand-line/80 bg-brand-cream px-3 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent" data-snake-dir="right">Right</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border border-brand-line/80 bg-brand-paper p-6">
+                    <div class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted">Progress</div>
+                    <div id="snakeCubes" class="mt-4 grid grid-cols-10 gap-2"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="../javascript/minigames.js"></script>
+    <script src="../javascript/lang.js"></script>
+</body>
+</html>
