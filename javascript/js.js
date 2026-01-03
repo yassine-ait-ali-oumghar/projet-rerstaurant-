@@ -1085,7 +1085,7 @@ tailwind.config = {
                 return true;
             }
 
-            const restaurantPhoneText = '+212612910010';
+            const restaurantPhoneText = '+1 (800) 242-8478';
             const restaurantWaDigits = digitsOnly(restaurantPhoneText) || '212000000000';
 
             function openWhatsApp(message){
