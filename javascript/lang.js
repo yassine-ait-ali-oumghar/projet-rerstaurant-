@@ -2,11 +2,22 @@
   // i18n module: stores language choice, translates [data-i18n] nodes, and manages RTL/LTR.
   const LANG_KEY = 'dt_lang';
 
+  function normalizeLang(v){
+    const s = String(v || '').trim().toLowerCase();
+    return (s === 'ar' || s === 'fr' || s === 'en') ? s : '';
+  }
+
   // Get persisted language (en/fr/ar). Defaults to English.
   function getLang(){
-    const v = (localStorage.getItem(LANG_KEY) || 'en').toLowerCase();
-    if (v === 'ar' || v === 'fr' || v === 'en') return v;
-    return 'en';
+    const stored = normalizeLang(localStorage.getItem(LANG_KEY));
+    if(stored) return stored;
+
+    const docLang = normalizeLang(document.documentElement.getAttribute('lang'));
+    const fallback = docLang || 'en';
+
+    // Persist a sane default once so refresh stays consistent.
+    try { localStorage.setItem(LANG_KEY, fallback); } catch (_) {}
+    return fallback;
   }
 
   // Translate a key for a given language (fallback to English).
@@ -34,6 +45,28 @@
       'nav.sales': 'Sales',
       'common.logout': 'Logout',
       'common.live': 'Live',
+
+      'home.since': 'Since 2010',
+      'home.hero_line1': 'A Culinary',
+      'home.hero_line2': 'Experience',
+      'home.hero_line3': 'Like No Other',
+      'home.hero_sub': 'Where the art of gastronomy meets excellence',
+      'home.discover_menu': 'Discover the Menu',
+      'home.reserve_table': 'Reserve a Table',
+      'home.scroll': 'Scroll',
+
+      'about.title': 'About Us',
+      'about.subtitle': 'A passion for gastronomy for more than a decade',
+      'about.story_tag': 'Our Story',
+      'about.story_title': 'Culinary Excellence Since 2010',
+      'about.p1': 'Since 2010, Le Gourmet has offered refined cuisine that blends tradition and innovation. Our Michelin-starred chef creates exceptional dishes using only the finest local, seasonal ingredients, carefully selected from outstanding producers.',
+      'about.p2': 'We believe every meal should be a memorable experience. That\'s why we pay attention to every detail, from ingredient selection to artistic presentation. Each plate tells a story, each flavor awakens an emotion.',
+      'about.years': 'Years of Excellence',
+      'about.stars': 'Michelin Stars',
+      'about.clients': 'Happy Clients',
+
+      'menu.title': 'Our Menu',
+      'menu.subtitle': 'A symphony of refined flavors',
 
       'common.login': 'Login',
       'common.register': 'Register',
@@ -149,6 +182,28 @@
       'nav.sales': 'Ventes',
       'common.logout': 'Déconnexion',
       'common.live': 'Live',
+
+      'home.since': 'Depuis 2010',
+      'home.hero_line1': 'Une Expérience',
+      'home.hero_line2': 'Culinaire',
+      'home.hero_line3': 'Exceptionnelle',
+      'home.hero_sub': "Où l'art de la gastronomie rencontre l'excellence",
+      'home.discover_menu': 'Découvrir le Menu',
+      'home.reserve_table': 'Réserver une Table',
+      'home.scroll': 'Scroll',
+
+      'about.title': 'À Propos de Nous',
+      'about.subtitle': "Une passion pour la gastronomie depuis plus d'une décennie",
+      'about.story_tag': 'Notre Histoire',
+      'about.story_title': "L'Excellence Culinaire Depuis 2010",
+      'about.p1': "Depuis 2010, Le Gourmet propose une cuisine raffinée qui allie tradition et innovation. Notre chef étoilé crée des plats exceptionnels en utilisant uniquement les meilleurs ingrédients locaux et de saison, sélectionnés avec soin auprès de producteurs d'exception.",
+      'about.p2': "Nous croyons que chaque repas devrait être une expérience mémorable, et c'est pourquoi nous accordons une attention particulière à chaque détail, de la sélection des ingrédients à la présentation artistique de nos plats. Chaque assiette raconte une histoire, chaque saveur éveille une émotion.",
+      'about.years': "Années d'Excellence",
+      'about.stars': 'Étoiles Michelin',
+      'about.clients': 'Clients Satisfaits',
+
+      'menu.title': 'Notre Menu',
+      'menu.subtitle': 'Une symphonie de saveurs raffinées',
 
       'common.login': 'Login',
       'common.register': 'Register',
@@ -401,10 +456,33 @@
     });
   }
 
+  function translateSubtree(root, lang){
+    if(!root || !root.querySelectorAll) return;
+    const map = dict[lang] || dict.en;
+
+    const applyOne = (el) => {
+      if(!el || !el.getAttribute) return;
+      const key = el.getAttribute('data-i18n') || '';
+      if(!key) return;
+      const txt = map[key];
+      if(typeof txt !== 'string') return;
+      const attr = el.getAttribute('data-i18n-attr');
+      if(attr) el.setAttribute(attr, txt);
+      else el.textContent = txt;
+    };
+
+    // root itself
+    applyOne(root);
+
+    // descendants
+    const nodes = root.querySelectorAll('[data-i18n]');
+    nodes.forEach(applyOne);
+  }
+
   // Persist language then re-apply translations.
   function setLang(next){
-    const v = String(next || 'en').toLowerCase();
-    localStorage.setItem(LANG_KEY, (v === 'ar' || v === 'fr' || v === 'en') ? v : 'en');
+    const v = normalizeLang(next) || 'en';
+    localStorage.setItem(LANG_KEY, v);
     applyLang();
   }
 
@@ -435,10 +513,18 @@
     }
 
     wrap.addEventListener('click', (e) => {
-      const t = e && e.target;
-      if(!t || !t.getAttribute) return;
-      const pick = t.getAttribute('data-lang-pick');
-      if(!pick) return;
+      const rawTarget = e && e.target;
+      if(!rawTarget) return;
+
+      const el = rawTarget.nodeType === 3 ? rawTarget.parentElement : rawTarget; // text node -> element
+      if(!el || !el.closest) return;
+
+      const btn = el.closest('[data-lang-pick]');
+      if(!btn || !btn.getAttribute) return;
+
+      const pick = String(btn.getAttribute('data-lang-pick') || '').toLowerCase();
+      if(pick !== 'en' && pick !== 'fr' && pick !== 'ar') return;
+
       setLang(pick);
       wrap.style.display = 'none';
     });
@@ -540,9 +626,41 @@
   // Expose helpers globally for other scripts.
   window.dtApplyLang = applyLang;
   window.dtGetLang = getLang;
+  window.dtSetLang = setLang;
   window.dtT = t;
 
   document.addEventListener('DOMContentLoaded', () => {
     applyLang();
+
+    // Sync language changes across pages/tabs without requiring a refresh.
+    // (storage event fires in other documents when dt_lang changes.)
+    window.addEventListener('storage', (e) => {
+      if(!e || e.key !== LANG_KEY) return;
+      const next = normalizeLang(e.newValue);
+      if(!next) return;
+      if(next === getLang()) return;
+      applyLang();
+    });
+
+    try {
+      const obs = new MutationObserver((mutations) => {
+        const l = getLang();
+        for(const m of mutations){
+          if(m.type === 'childList'){
+            if(m.addedNodes && m.addedNodes.length){
+              m.addedNodes.forEach((n) => {
+                if(n && n.nodeType === 1) translateSubtree(n, l);
+              });
+            }
+          }
+        }
+      });
+
+      if(document.body){
+        obs.observe(document.body, { childList: true, subtree: true });
+      }
+    } catch (_) {
+      // ignore
+    }
   });
 })();

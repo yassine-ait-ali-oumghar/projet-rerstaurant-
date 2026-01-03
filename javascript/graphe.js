@@ -463,16 +463,16 @@
   }
 
   // Update chart with new data
-  function updateChart(rows) {
-    const ch = ensureChart();
-    if (!ch) return;
+  function updateChart(rows) {//katakhd rows as a parametre
+    const ch = ensureChart();//affectation l'instance dyl chart ila mkntch endna
+    if (!ch) return;//if it does not exist, nothing to update
 
-    const bestName = rows[0] ? rows[0].product : '';
+    const bestName = rows[0] ? rows[0].product : '';//assume que first row is the best seller
 
-    ch.data.labels = rows.map(r => r.product);
-    ch.data.datasets[0].data = rows.map(r => r.count);
-    ch.data.datasets[0].backgroundColor = rows.map(r => colorForBar(r.product === bestName));
-    ch.data.datasets[0].borderColor = rows.map(r => borderForBar(r.product === bestName));
+    ch.data.labels = rows.map(r => r.product);//update labels with all product names
+    ch.data.datasets[0].data = rows.map(r => r.count);//update data with order counts
+    ch.data.datasets[0].backgroundColor = rows.map(r => colorForBar(r.product === bestName));//best seller got special color noral basic color
+    ch.data.datasets[0].borderColor = rows.map(r => borderForBar(r.product === bestName));//best seller borders got highlighed while others doesnt
 
     ch.update();
   }

@@ -262,7 +262,41 @@ tailwind.config = {
           return true;
         });
         adminCount.textContent=String(filtered.length);
-        adminList.innerHTML=filtered.map(r=>{ /* contenu admin */ }).join('');
+        adminList.innerHTML=filtered.map(r=>{
+          const status=String(r.status||'NON_CONFIRMED');
+          const statusLabel=
+            status==='CONFIRMED' ? 'Confirmed' :
+            status==='CANCELLED' ? 'Cancelled' :
+            'Non confirmed';
+          const statusCls=status==='CONFIRMED' ? 'status-ok' : 'status-non';
+
+          const title=`${String(r.name||'')} · ${Number(r.people||0)} pers`;
+          const meta=`${String(r.date||'')} · ${String(r.time||'')} · ${String(r.tableName||'')} · ${(String(r.tableClass||'')||'').toUpperCase()}`;
+          const phoneTxt=String(r.phone||'');
+          const emailTxt=String(r.byEmail||'');
+
+          const canAct=status!=='CANCELLED';
+
+          return `
+<div class="border border-brand-line/80 bg-brand-paper p-5 shadow-soft">
+  <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+    <div class="min-w-0">
+      <div class="flex items-center gap-3">
+        <div class="font-semibold truncate">${title}</div>
+        <span class="status-badge ${statusCls}">${statusLabel}</span>
+      </div>
+      <div class="mt-1 text-sm text-brand-muted">${meta}</div>
+      <div class="mt-2 text-xs text-brand-muted">${emailTxt ? `Email: ${emailTxt}` : ''}${emailTxt && phoneTxt ? ' · ' : ''}${phoneTxt ? `Phone: ${phoneTxt}` : ''}</div>
+    </div>
+    <div class="flex flex-wrap gap-2 md:justify-end">
+      ${canAct ? `<button type="button" data-action="verify" data-id="${String(r.id||'')}" class="border border-brand-line/80 bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">Confirm</button>` : ''}
+      ${canAct ? `<button type="button" data-action="change-time" data-id="${String(r.id||'')}" class="border border-brand-line/80 bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">Change time</button>` : ''}
+      ${canAct ? `<button type="button" data-action="cancel" data-id="${String(r.id||'')}" class="border border-brand-line/80 bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">Cancel</button>` : ''}
+      <button type="button" data-action="delete" data-id="${String(r.id||'')}" class="border border-brand-line/80 bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-accent">Delete</button>
+    </div>
+  </div>
+</div>`;
+        }).join('');
       }
 
       // init page
@@ -319,8 +353,56 @@ tailwind.config = {
           const id=String(btn.getAttribute('data-id')||'');
           if(!id) return;
 
-          if(action==='verify'){ /* confirmer */ return; }
-          if(action==='delete'){ /* supprimer */ return; }
+          const list=loadRes();
+          const idx=list.findIndex(r=>r&&String(r.id||'')===id);
+          if(idx<0) return;
+
+          if(action==='verify'){
+            list[idx].status='CONFIRMED';
+            saveRes(list);
+            renderTimes();
+            renderAvail();
+            renderAdmin();
+            return;
+          }
+
+          if(action==='change-time'){
+            const r=list[idx];
+            const current=String(r.time||'');
+            const pick=prompt(`New time (available: ${slots.join(', ')}):`, current);
+            if(pick===null) return;
+            const newTime=String(pick||'').trim();
+            if(!newTime) return;
+            if(!slots.includes(newTime)) return;
+            const exists=list.some(x=>x&&x.id!==r.id&&x.tableName===r.tableName&&x.date===r.date&&x.time===newTime);
+            if(exists) return;
+            r.time=newTime;
+            saveRes(list);
+            renderTimes();
+            renderAvail();
+            renderAdmin();
+            return;
+          }
+
+          if(action==='cancel'){
+            list[idx].status='CANCELLED';
+            saveRes(list);
+            renderTimes();
+            renderAvail();
+            renderAdmin();
+            return;
+          }
+
+          if(action==='delete'){
+            const ok=confirm('Delete this reservation?');
+            if(!ok) return;
+            list.splice(idx,1);
+            saveRes(list);
+            renderTimes();
+            renderAvail();
+            renderAdmin();
+            return;
+          }
         });
       }
 

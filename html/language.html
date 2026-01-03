@@ -62,16 +62,21 @@
       const sel = document.getElementById('langSelect');
 
       function render(){
-        const v = (localStorage.getItem('dt_lang') || 'en').toLowerCase();
-        if (sel) sel.value = (v === 'ar' || v === 'fr' || v === 'en') ? v : 'en';
-        if(curEl) curEl.textContent = v === 'ar' ? '🇲🇦 العربية' : (v === 'fr' ? '🇫🇷 Français' : '🇬🇧 English');
+        const v = (window.dtGetLang ? window.dtGetLang() : (localStorage.getItem('dt_lang') || 'en')).toString().trim().toLowerCase();
+        const safe = (v === 'ar' || v === 'fr' || v === 'en') ? v : 'en';
+        if (sel) sel.value = safe;
+        if(curEl) curEl.textContent = safe === 'ar' ? '🇲🇦 العربية' : (safe === 'fr' ? '🇫🇷 Français' : '🇬🇧 English');
       }
 
       if(sel) sel.addEventListener('change', () => {
         const v = String(sel.value || 'en').toLowerCase();
-        localStorage.setItem('dt_lang', v);
-        if(window.dtApplyLang) window.dtApplyLang();
+        if(window.dtSetLang) window.dtSetLang(v);
+        else localStorage.setItem('dt_lang', (v === 'ar' || v === 'fr' || v === 'en') ? v : 'en');
         render();
+
+        window.setTimeout(() => {
+          window.location.href = 'html.html';
+        }, 120);
       });
 
       render();

@@ -1499,7 +1499,7 @@ tailwind.config = {
                     const isEditing = idx === editingUserIndex;
                     const isDefaultAdmin = String(email).toLowerCase() === 'admin@gmail.com';
                     return `
-<div class="flex items-center justify-between gap-3 border border-brand-line/80 bg-brand-paper px-4 py-3">
+<div class="flex items-center justify-between gap-3 border border-brand-line/80 bg-brand-paper px-4 py-3" data-admin-user-row>
   <div class="flex min-w-0 items-center gap-3">
     ${avatar ? `<img src="${avatar}" alt="" class="h-10 w-10 flex-none rounded-full object-cover" />` : `<div class="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-brand-line/80 bg-white text-xs font-semibold text-brand-bronze">${String(email).slice(0,2).toUpperCase()}</div>`}
     <div class="min-w-0">
@@ -2617,7 +2617,7 @@ tailwind.config = {
                         const users = loadUsers();
                         if (Number.isNaN(i) || i < 0 || i >= users.length) return;
 
-                        const row = saveBtn.closest('div');
+                        const row = saveBtn.closest('[data-admin-user-row]');
                         const nameEl = row && row.querySelector ? row.querySelector('[data-admin-edit-user-name]') : null;
                         const roleEl = row && row.querySelector ? row.querySelector('[data-admin-edit-user-role]') : null;
 

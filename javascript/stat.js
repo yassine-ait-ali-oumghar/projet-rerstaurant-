@@ -4,24 +4,24 @@
   // - Shows Chart.js graphs + table
   // - Lets the user rate products they ordered
   // - Auto-refreshes when localStorage changes
-  const SESSION_KEY = 'dt_session';
-  const ADMIN_SESSION_KEY = 'dt_admin_session';
-  const USERS_KEY = 'dt_users';
-  const THEME_KEY = 'dt_theme';
+  const SESSION_KEY = 'dt_session';// user session
+  const ADMIN_SESSION_KEY = 'dt_admin_session';// admin session
+  const USERS_KEY = 'dt_users';// users list
+  const THEME_KEY = 'dt_theme';// dark / light 
 
   // DOM nodes (charts + KPIs)
-  const chartEl = document.getElementById('statsChart');
-  const ratingsChartEl = document.getElementById('ratingsChart');
+  const chartEl = document.getElementById('statsChart');// wins/losses
+  const ratingsChartEl = document.getElementById('ratingsChart');// ratings chart
   const tableEl = document.getElementById('statsTable');
   const userNameEl = document.getElementById('statUserName');
   const logoutBtn = document.getElementById('statLogoutBtn');
-  const lastUpdateEl = document.getElementById('statLastUpdate');
-  const kpiWinsEl = document.getElementById('kpiWins');
-  const kpiLossesEl = document.getElementById('kpiLosses');
+  const lastUpdateEl = document.getElementById('statLastUpdate');// time label
+  const kpiWinsEl = document.getElementById('kpiWins');// total wins
+  const kpiLossesEl = document.getElementById('kpiLosses');// total losses
   const themeToggleBtn = document.getElementById('themeToggle');
 
-  const ratingProductEl = document.getElementById('ratingProduct');
-  const ratingValueEl = document.getElementById('ratingValue');
+  const ratingProductEl = document.getElementById('ratingProduct');// select product
+  const ratingValueEl = document.getElementById('ratingValue'); // rating value
 
   // Theme helpers (dark/light)
   function applyTheme(theme){
@@ -31,10 +31,13 @@
     if (themeToggleBtn) themeToggleBtn.textContent = dark ? 'Light' : 'Dark';
   }
 
+  // Load theme from localStorage
   function loadTheme(){
     return localStorage.getItem(THEME_KEY) || 'light';
   }
 
+
+    // Switch between dark and light
   function toggleTheme(){
     const cur = loadTheme();
     const next = String(cur).toLowerCase() === 'dark' ? 'light' : 'dark';
@@ -49,6 +52,7 @@
     try { return JSON.parse(v); } catch { return null; }
   }
 
+  // Load user session
   function loadSession(){
     const raw = localStorage.getItem(SESSION_KEY);
     const s = safeJsonParse(raw);
@@ -56,21 +60,21 @@
     return s;
   }
 
-  // Guard: redirect to home if user is not logged in.
+  //redirect to home if user is not logged in.
   function requireLogin(){
     const s = loadSession();
     if(s) return s;
     window.location.href = 'html.html';
     return null;
   }
-
+// Load all users
   function loadUsers(){
     const raw = localStorage.getItem(USERS_KEY);
     const users = safeJsonParse(raw);
     return Array.isArray(users) ? users : [];
   }
 
-  // Resolve displayed name from dt_users; fallback to email.
+  // Get user name or email  // Resolve displayed name from dt_users; fallback to email.  
   function getDisplayName(session){
     const email = String(session && session.email || '').trim();
     if(!email) return 'Utilisateur';
@@ -79,9 +83,11 @@
     return String((u && u.name) || email);
   }
 
+// Build storage key
   function statsKey(email){
     return 'dt_game_stats_' + String(email||'').toLowerCase();
   }
+
 
   function ordersKey(email){
     return 'dt_orders_' + String(email||'').toLowerCase();
@@ -102,6 +108,7 @@
     };
   }
 
+ // Load and clean stats
   function loadStats(email){
     const raw = localStorage.getItem(statsKey(email));
     const st = safeJsonParse(raw);
@@ -427,6 +434,7 @@
       }
     }, 900);
   }
+  /* ===== LOGOUT ===== */
 
   if(logoutBtn){
     logoutBtn.addEventListener('click', (e) => {

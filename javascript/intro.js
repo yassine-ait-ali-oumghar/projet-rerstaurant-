@@ -1,13 +1,17 @@
+
+
 (function(){
-  const KEY = 'dt_intro_played_session';
-  const overlay = document.getElementById('introOverlay');
+  const KEY = 'dt_intro_played_session';//session storage key to track if intro was played this session
+  const overlay = document.getElementById('introOverlay');//Gets the intro overlay and video from HTML
   const video = document.getElementById('introVideo');
 
-  if (!overlay || !video) return;
+  if (!overlay || !video) return;//if one of them is missing stop the script
 
   const lockClass = 'intro-playing';
-  document.body.classList.add(lockClass);
+  document.body.classList.add(lockClass);//prevents scrolling and right-clicking during intro
 
+
+  //blocks user action 
   function stopEvent(e){
     e.preventDefault();
     e.stopPropagation();
@@ -25,11 +29,13 @@
   function onContextMenu(e){
     return stopEvent(e);
   }
-
+//Disables scrolling and right-click while intro is active
   window.addEventListener('wheel', onWheel, { passive: false });
   window.addEventListener('touchmove', onTouchMove, { passive: false });
   window.addEventListener('contextmenu', onContextMenu);
 
+  
+  // Clean up event listeners when intro ends
   function unlock(){
     document.body.classList.remove(lockClass);
     window.removeEventListener('wheel', onWheel);
@@ -37,10 +43,12 @@
     window.removeEventListener('contextmenu', onContextMenu);
   }
 
+
+  //Saves that intro was already shown in this session.
   function markPlayed(){
     try { sessionStorage.setItem(KEY, '1'); } catch (_) {}
   }
-
+//Hides and removes the intro overlay and unlocks the page.
   function hideOverlay(){
     try {
       overlay.classList.add('intro-hidden');
@@ -50,7 +58,7 @@
     }
     unlock();
   }
-
+//Plays a flash → fade animation → hides overlay.
   function fadeThenHide(){
     overlay.classList.add('intro-flash');
     window.setTimeout(() => {
@@ -58,27 +66,28 @@
       window.setTimeout(hideOverlay, 800);
     }, 160);
   }
-
+//If intro was already shown, skip everything.
   const alreadyPlayed = sessionStorage.getItem(KEY) === '1';
   if (alreadyPlayed) {
     hideOverlay();
     return;
   }
-
+//Prevents multiple transitions.
   let didFinish = false;
   let transitionStarted = false;
 
+//Used for safety timers if video fails.
   let hasStartedPlaying = false;
   let fallbackTimer = null;
   let transitionTimer = null;
-
+//Stops fallback timer.
   function clearFallback(){
     if (fallbackTimer) {
       window.clearTimeout(fallbackTimer);
       fallbackTimer = null;
     }
   }
-
+//Stops transition timer.
   function clearTransitionTimer(){
     if (transitionTimer) {
       window.clearTimeout(transitionTimer);
